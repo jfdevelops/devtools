@@ -9,12 +9,13 @@
 
 /**
  * True in every build except a production one. Bundlers replace
- * `process.env.NODE_ENV` textually; the `typeof process` guard keeps a
- * non-bundled browser ESM load from throwing.
+ * `process.env.NODE_ENV` textually; short-circuiting `&&` keeps a
+ * non-bundled browser ESM load from throwing while still folding to
+ * `false` when `NODE_ENV` is `"production"`.
  */
 export const IS_DEV: boolean =
-  typeof process === 'undefined' ||
-  process.env == null ||
+  typeof process !== 'undefined' &&
+  process.env != null &&
   process.env.NODE_ENV !== 'production';
 
 export const DEVTOOLS_CHANNEL_VERSION = 1 as const;
@@ -94,7 +95,11 @@ function createChannel(): DevtoolsChannel {
     emit(event) {
       events.push(event);
       if (events.length > channel.maxEvents) {
-        events = events.slice(-channel.maxEvents);
+        // `slice(-0)` is `slice(0)` (keeps everything); use an explicit
+        // length offset so `maxEvents: 0` clears the buffer.
+        events = events.slice(
+          Math.max(0, events.length - channel.maxEvents),
+        );
       }
       notify();
     },

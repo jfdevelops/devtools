@@ -129,14 +129,6 @@ export function createDevtools<
     });
   };
 
-  const reduceCast = <VM>(
-    reduce: (snapshot: DevtoolsSnapshotOf<E, Ev>) => VM,
-  ) =>
-    reduce as unknown as (snapshot: {
-      entities: Record<string, ReadonlyArray<unknown>>;
-      events: ReadonlyArray<unknown>;
-    }) => VM;
-
   return {
     putEntity(collection, id, data) {
       if (!IS_DEV) return;
@@ -166,19 +158,40 @@ export function createDevtools<
       return existing;
     },
     createClient(reduce, clientOptions = {}) {
+      const entityKeys = Object.keys(entities);
+      // Channel snapshots omit collections until the first `putEntity`;
+      // fill declared keys so `reduce` can rely on present arrays.
+      const reduceWithDefaults = (snapshot: {
+        entities: Record<string, ReadonlyArray<unknown>>;
+        events: ReadonlyArray<unknown>;
+      }) => {
+        const filled: Record<string, ReadonlyArray<unknown>> = {
+          ...snapshot.entities,
+        };
+        for (const name of entityKeys) {
+          if (filled[name] === undefined) {
+            filled[name] = [];
+          }
+        }
+        return reduce({
+          entities: filled,
+          events: snapshot.events,
+        } as DevtoolsSnapshotOf<E, Ev>);
+      };
+
       // Only forward `channel` when supplied — `channel: undefined` would
       // suppress the global-channel lookup.
       return new Devtools(
         'channel' in clientOptions
           ? {
               channelKey: key,
-              reduce: reduceCast(reduce),
+              reduce: reduceWithDefaults,
               channel: clientOptions.channel,
               maxEvents: clientOptions.maxEvents,
             }
           : {
               channelKey: key,
-              reduce: reduceCast(reduce),
+              reduce: reduceWithDefaults,
               maxEvents: clientOptions.maxEvents,
             },
       );

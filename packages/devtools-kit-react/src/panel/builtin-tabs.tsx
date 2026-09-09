@@ -134,9 +134,10 @@ function Diagnostics({ rows }: { rows: ReadonlyArray<DevtoolsDiagnosticRow> }) {
   if (rows.length === 0) {
     return <p className='dtk__empty'>Nothing to report.</p>;
   }
+  const newestFirst = rows.slice().reverse();
   return (
     <div>
-      {rows.map((row, index) => (
+      {newestFirst.map((row, index) => (
         <div className='dtk__diag' data-kind={row.kind} key={`${row.at}-${index}`}>
           <div className='dtk__diag-title'>{row.title}</div>
           {row.detail ? (
