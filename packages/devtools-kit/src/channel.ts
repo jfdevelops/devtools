@@ -8,15 +8,21 @@
  */
 
 /**
- * True in every build except a production one. Bundlers replace
- * `process.env.NODE_ENV` textually; short-circuiting `&&` keeps a
- * non-bundled browser ESM load from throwing while still folding to
- * `false` when `NODE_ENV` is `"production"`.
+ * True unless this is a production build. Every bundler (Vite, webpack, esbuild,
+ * Next, Parcel, Rollup + replace) substitutes `process.env.NODE_ENV` with a
+ * string literal, so in a production bundle this folds to `false` and the
+ * guarded code is dead. The `try`/`catch` covers an unbundled browser load,
+ * where `process` is not defined — there we default to dev.
  */
-export const IS_DEV: boolean =
-  typeof process !== 'undefined' &&
-  process.env != null &&
-  process.env.NODE_ENV !== 'production';
+export const IS_DEV: boolean = detectDev();
+
+function detectDev(): boolean {
+  try {
+    return process.env.NODE_ENV !== 'production';
+  } catch {
+    return true;
+  }
+}
 
 export const DEVTOOLS_CHANNEL_VERSION = 1 as const;
 

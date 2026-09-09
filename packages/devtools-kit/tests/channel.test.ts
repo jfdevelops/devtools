@@ -1,5 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getDevtoolsChannel } from '../src';
+import { getDevtoolsChannel, IS_DEV } from '../src';
+
+describe('IS_DEV', () => {
+  it('is true when NODE_ENV is not "production"', () => {
+    // The kit must default to dev when it cannot tell — otherwise an unbundled
+    // browser load (no `process`) silently disables devtools.
+    expect(IS_DEV).toBe(true);
+  });
+});
 
 const KEY = '__DEVTOOLS_KIT_TEST_CHANNEL__';
 
