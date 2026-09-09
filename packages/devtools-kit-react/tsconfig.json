@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node", "vitest/globals"],
+    "paths": {
+      "@jfdevelops/devtools-kit": ["../devtools-kit/src/index.ts"]
+    }
+  },
+  "include": ["src", "tests", "vite.config.ts", "vitest.setup.ts"]
+}
