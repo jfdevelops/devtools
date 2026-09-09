@@ -3,8 +3,8 @@ import { getDevtoolsChannel, IS_DEV } from '../src';
 
 describe('IS_DEV', () => {
   it('is true when NODE_ENV is not "production"', () => {
-    // The kit must default to dev when it cannot tell — otherwise an unbundled
-    // browser load (no `process`) silently disables devtools.
+    // Vitest sets NODE_ENV to "test". Bundlers replace process.env.NODE_ENV
+    // textually — no typeof-process guard — so Vite browsers stay in dev.
     expect(IS_DEV).toBe(true);
   });
 });
