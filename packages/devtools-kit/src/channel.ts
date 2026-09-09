@@ -8,21 +8,15 @@
  */
 
 /**
- * True unless this is a production build. Every bundler (Vite, webpack, esbuild,
- * Next, Parcel, Rollup + replace) substitutes `process.env.NODE_ENV` with a
- * string literal, so in a production bundle this folds to `false` and the
- * guarded code is dead. The `try`/`catch` covers an unbundled browser load,
- * where `process` is not defined — there we default to dev.
+ * True in every build except a production one. Bundlers replace
+ * `process.env.NODE_ENV` textually with a string literal, so this folds to
+ * `false` in production and guarded call sites are dead-code eliminated.
+ * Do not wrap in `typeof process` / `try`/`catch`: a leading existence guard
+ * short-circuits in browser bundles (no `process`) before the replaced
+ * literal, forcing `false` even in development; a catching helper often
+ * survives minification and blocks dead-code folding.
  */
-export const IS_DEV: boolean = detectDev();
-
-function detectDev(): boolean {
-  try {
-    return process.env.NODE_ENV !== 'production';
-  } catch {
-    return true;
-  }
-}
+export const IS_DEV: boolean = process.env.NODE_ENV !== 'production';
 
 export const DEVTOOLS_CHANNEL_VERSION = 1 as const;
 
