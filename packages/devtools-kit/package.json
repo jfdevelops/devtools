@@ -1,0 +1,47 @@
+{
+  "name": "@jfdevelops/devtools-kit",
+  "version": "0.0.0",
+  "description": "Framework-agnostic building blocks for library devtools.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jfdevelops/devtools-kit.git",
+    "directory": "packages/devtools-kit"
+  },
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "tsdown": "0.22.1",
+    "typescript": "6.0.3",
+    "unrun": "0.3.0",
+    "vite": "8.0.10",
+    "vitest": "4.1.5"
+  }
+}
