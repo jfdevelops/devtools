@@ -22,15 +22,17 @@ export {
 } from './standalone';
 
 export {
-  createDevtoolsChannelApi,
+  createDevtools,
   Devtools,
   getDevtoolsChannel,
   IS_DEV,
   type CreateClientOptions,
+  type CreateDevtoolsOptions,
+  type DevtoolsApi,
   type DevtoolsChannel,
-  type DevtoolsChannelApi,
   type DevtoolsChannelSnapshot,
   type DevtoolsOptions,
-  type EntitySchema,
-  type TypedDevtoolsSnapshot,
+  type DevtoolsSnapshotOf,
+  type EntitySchemas,
+  type StandardSchemaV1,
 } from '@jfdevelops/devtools-kit';

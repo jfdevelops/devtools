@@ -1,13 +1,19 @@
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 import { getDevtoolsChannel, IS_DEV, type DevtoolsChannel } from './channel';
 import { Devtools } from './devtools';
 
-/** Map of collection name → the entity type stored in it. */
-export type EntitySchema = Record<string, unknown>;
+/** Map of collection name → the Standard Schema for entities in it. */
+export type EntitySchemas = Record<string, StandardSchemaV1>;
 
-/** Typed view of a channel snapshot for a given schema. */
-export interface TypedDevtoolsSnapshot<E extends EntitySchema, Ev> {
-  entities: { [K in keyof E]: ReadonlyArray<E[K]> };
-  events: ReadonlyArray<Ev>;
+/** The snapshot shape a client's `reduce` receives, inferred from the schemas. */
+export interface DevtoolsSnapshotOf<
+  E extends EntitySchemas,
+  Ev extends StandardSchemaV1,
+> {
+  entities: {
+    [K in keyof E]: ReadonlyArray<StandardSchemaV1.InferOutput<E[K]>>;
+  };
+  events: ReadonlyArray<StandardSchemaV1.InferOutput<Ev>>;
 }
 
 export interface CreateClientOptions {
@@ -15,44 +21,79 @@ export interface CreateClientOptions {
   channel?: DevtoolsChannel | undefined;
 }
 
+export interface CreateDevtoolsOptions<
+  E extends EntitySchemas,
+  Ev extends StandardSchemaV1,
+> {
+  /** Unique global key, e.g. `'__MY_LIBRARY_DEVTOOLS__'`. */
+  key: string;
+  /** Schema per entity collection. `{}` if the library only tracks events. */
+  entities: E;
+  /** Schema for the event stream (typically a discriminated union). */
+  events?: Ev;
+  /**
+   * Validate `putEntity` / `emit` payloads against the schemas in development
+   * and `console.warn` on failure. Off by default; async schemas are skipped.
+   */
+  validate?: boolean;
+}
+
 /**
- * The typed surface a library builds its devtools on. The `put*` / `emit` half
- * is called from library internals at instrumentation points; `createClient`
- * produces the {@link Devtools} instance the UI consumes.
+ * The typed surface a library builds its devtools on. Everything is inferred
+ * from `entities` / `events` — no explicit type arguments. The `put*` / `emit`
+ * half is called from library internals; `createClient` produces the
+ * {@link Devtools} instance the UI consumes. All no-ops in production.
  */
-export interface DevtoolsChannelApi<E extends EntitySchema, Ev> {
-  putEntity<K extends keyof E & string>(collection: K, id: string, data: E[K]): void;
+export interface DevtoolsApi<
+  E extends EntitySchemas,
+  Ev extends StandardSchemaV1,
+> {
+  putEntity<K extends keyof E & string>(
+    collection: K,
+    id: string,
+    data: StandardSchemaV1.InferOutput<E[K]>,
+  ): void;
   removeEntity(collection: keyof E & string, id: string): void;
-  emit(event: Ev): void;
+  emit(event: StandardSchemaV1.InferOutput<Ev>): void;
 
   /** Monotonic id, unique within the process. */
   nextId(prefix: string): string;
-  /** Stable string id for a `symbol` identity token (e.g. an owner marker). */
+  /** Stable string id for a `symbol` identity token. */
   ownerId(token: symbol): string;
 
   createClient<VM>(
-    reduce: (snapshot: TypedDevtoolsSnapshot<E, Ev>) => VM,
+    reduce: (snapshot: DevtoolsSnapshotOf<E, Ev>) => VM,
     options?: CreateClientOptions,
   ): Devtools<VM>;
 }
 
 /**
- * Creates the {@link DevtoolsChannelApi} for a library. Pick a unique
- * `channelKey` (e.g. `'__MY_LIBRARY_DEVTOOLS__'`). Everything is a no-op in
- * production and never throws.
+ * Creates a {@link DevtoolsApi} from a Standard Schema description of the data
+ * a library exposes. Types flow from the argument, so callers never write
+ * generics:
  *
  * ```ts
- * type Entities = { widget: WidgetDescriptor };
- * type Event = { type: 'widget:tick'; at: number };
+ * import { z } from 'zod';
+ * import { createDevtools } from '@jfdevelops/devtools-kit';
  *
- * export const devtools = createDevtoolsChannelApi<Entities, Event>(
- *   '__MY_LIBRARY_DEVTOOLS__',
- * );
+ * export const devtools = createDevtools({
+ *   key: '__MY_LIBRARY_DEVTOOLS__',
+ *   entities: {
+ *     widget: z.object({ id: z.string(), label: z.string() }),
+ *   },
+ *   events: z.discriminatedUnion('type', [
+ *     z.object({ type: z.literal('widget:tick'), at: z.number() }),
+ *   ]),
+ * });
+ *
+ * devtools.putEntity('widget', w.id, w); // data: { id: string; label: string }
  * ```
  */
-export function createDevtoolsChannelApi<E extends EntitySchema, Ev>(
-  channelKey: string,
-): DevtoolsChannelApi<E, Ev> {
+export function createDevtools<
+  const E extends EntitySchemas,
+  Ev extends StandardSchemaV1 = StandardSchemaV1<unknown, unknown>,
+>(options: CreateDevtoolsOptions<E, Ev>): DevtoolsApi<E, Ev> {
+  const { key, entities, events, validate = false } = options;
   let counter = 0;
   const ownerIds = new Map<symbol, string>();
 
@@ -64,50 +105,82 @@ export function createDevtoolsChannelApi<E extends EntitySchema, Ev>(
     }
   };
 
+  const checkSchema = (
+    schema: StandardSchemaV1 | undefined,
+    label: string,
+    value: unknown,
+  ): void => {
+    if (!validate || !schema) {
+      return;
+    }
+    safely(() => {
+      const result = schema['~standard'].validate(value);
+      if (result instanceof Promise) {
+        console.warn(`[devtools-kit] async schema for ${label} was skipped`);
+        return;
+      }
+      if (result.issues) {
+        console.warn(
+          `[devtools-kit] ${label} failed schema validation`,
+          result.issues,
+          value,
+        );
+      }
+    });
+  };
+
+  const reduceCast = <VM>(
+    reduce: (snapshot: DevtoolsSnapshotOf<E, Ev>) => VM,
+  ) =>
+    reduce as unknown as (snapshot: {
+      entities: Record<string, ReadonlyArray<unknown>>;
+      events: ReadonlyArray<unknown>;
+    }) => VM;
+
   return {
     putEntity(collection, id, data) {
       if (!IS_DEV) return;
-      safely(() =>
-        getDevtoolsChannel(channelKey)?.putEntity(collection, id, data),
-      );
+      checkSchema(entities[collection], `entity "${collection}"`, data);
+      safely(() => getDevtoolsChannel(key)?.putEntity(collection, id, data));
     },
     removeEntity(collection, id) {
       if (!IS_DEV) return;
-      safely(() => getDevtoolsChannel(channelKey)?.removeEntity(collection, id));
+      safely(() => getDevtoolsChannel(key)?.removeEntity(collection, id));
     },
     emit(event) {
       if (!IS_DEV) return;
-      safely(() => getDevtoolsChannel(channelKey)?.emit(event));
+      checkSchema(events, 'event', event);
+      safely(() => getDevtoolsChannel(key)?.emit(event));
     },
     nextId(prefix) {
       counter += 1;
       return `${prefix}-${counter}`;
     },
     ownerId(token) {
-      let id = ownerIds.get(token);
-      if (!id) {
+      let existing = ownerIds.get(token);
+      if (!existing) {
         counter += 1;
-        id = `owner-${counter}`;
-        ownerIds.set(token, id);
+        existing = `owner-${counter}`;
+        ownerIds.set(token, existing);
       }
-      return id;
+      return existing;
     },
-    createClient(reduce, options = {}) {
-      const reduceUnknown = reduce as unknown as (snapshot: {
-        entities: Record<string, ReadonlyArray<unknown>>;
-        events: ReadonlyArray<unknown>;
-      }) => ReturnType<typeof reduce>;
-      // Only forward `channel` when the caller actually supplied one — passing
-      // `channel: undefined` would suppress the global-channel lookup.
+    createClient(reduce, clientOptions = {}) {
+      // Only forward `channel` when supplied — `channel: undefined` would
+      // suppress the global-channel lookup.
       return new Devtools(
-        'channel' in options
+        'channel' in clientOptions
           ? {
-              channelKey,
-              reduce: reduceUnknown,
-              channel: options.channel,
-              maxEvents: options.maxEvents,
+              channelKey: key,
+              reduce: reduceCast(reduce),
+              channel: clientOptions.channel,
+              maxEvents: clientOptions.maxEvents,
             }
-          : { channelKey, reduce: reduceUnknown, maxEvents: options.maxEvents },
+          : {
+              channelKey: key,
+              reduce: reduceCast(reduce),
+              maxEvents: clientOptions.maxEvents,
+            },
       );
     },
   };

@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { createDevtoolsChannelApi } from '@jfdevelops/devtools-kit';
+import { z } from 'zod';
+import { createDevtools } from '@jfdevelops/devtools-kit';
 import {
   createDiagnosticsTab,
   createEventLogTab,
@@ -14,13 +15,15 @@ afterEach(() => {
   cleanup();
 });
 
-type Entities = { widget: { id: string; label: string } };
-type Event =
-  | { type: 'widget:add'; at: number; label: string }
-  | { type: 'widget:error'; at: number; message: string };
+const widgetSchema = z.object({ id: z.string(), label: z.string() });
+const eventSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('widget:add'), at: z.number(), label: z.string() }),
+  z.object({ type: z.literal('widget:error'), at: z.number(), message: z.string() }),
+]);
+type Event = z.infer<typeof eventSchema>;
 
 interface ViewModel {
-  widgets: ReadonlyArray<{ id: string; label: string }>;
+  widgets: ReadonlyArray<z.infer<typeof widgetSchema>>;
   events: ReadonlyArray<Event>;
 }
 
@@ -28,7 +31,11 @@ let keySeq = 0;
 
 function setup() {
   const key = `__DEVTOOLS_KIT_REACT_TEST_${(keySeq += 1)}__`;
-  const api = createDevtoolsChannelApi<Entities, Event>(key);
+  const api = createDevtools({
+    key,
+    entities: { widget: widgetSchema },
+    events: eventSchema,
+  });
   const devtools = api.createClient<ViewModel>((snapshot) => ({
     widgets: snapshot.entities.widget ?? [],
     events: snapshot.events,

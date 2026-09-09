@@ -13,21 +13,27 @@ compiles to nothing in production.
 
 ## How it fits together
 
-1. **Your library** creates a channel API once and calls it at instrumentation
-   points (a component mounted, a step advanced, an error thrown):
+1. **Your library** describes its data with any
+   [Standard Schema](https://standardschema.dev) library (Zod, Valibot,
+   ArkType, …) and calls the API at instrumentation points. Types are inferred
+   from the schemas — no generics:
 
    ```ts
    // my-lib/src/devtools.ts
-   import { createDevtoolsChannelApi } from '@jfdevelops/devtools-kit';
+   import { z } from 'zod';
+   import { createDevtools } from '@jfdevelops/devtools-kit';
 
-   type Entities = { step: StepDescriptor; field: FieldDescriptor };
-   type Event =
-     | { type: 'step:enter'; at: number; id: string }
-     | { type: 'validation:fail'; at: number; message: string };
-
-   export const devtools = createDevtoolsChannelApi<Entities, Event>(
-     '__MY_LIB_DEVTOOLS__',
-   );
+   export const devtools = createDevtools({
+     key: '__MY_LIB_DEVTOOLS__',
+     entities: {
+       step: z.object({ id: z.string(), title: z.string() }),
+       field: z.object({ name: z.string(), valid: z.boolean() }),
+     },
+     events: z.discriminatedUnion('type', [
+       z.object({ type: z.literal('step:enter'), at: z.number(), id: z.string() }),
+       z.object({ type: z.literal('validation:fail'), at: z.number(), message: z.string() }),
+     ]),
+   });
 
    // …elsewhere, guarded so it strips in prod:
    devtools.putEntity('step', step.id, step);

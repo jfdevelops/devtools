@@ -7,9 +7,11 @@ export {
 } from './channel';
 export { Devtools, type DevtoolsOptions } from './devtools';
 export {
-  createDevtoolsChannelApi,
+  createDevtools,
   type CreateClientOptions,
-  type DevtoolsChannelApi,
-  type EntitySchema,
-  type TypedDevtoolsSnapshot,
+  type CreateDevtoolsOptions,
+  type DevtoolsApi,
+  type DevtoolsSnapshotOf,
+  type EntitySchemas,
 } from './api';
+export type { StandardSchemaV1 } from '@standard-schema/spec';

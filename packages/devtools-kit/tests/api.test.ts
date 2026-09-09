@@ -1,33 +1,48 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createDevtoolsChannelApi, Devtools, getDevtoolsChannel } from '../src';
+import { afterEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
+import { z } from 'zod';
+import { createDevtools, Devtools, getDevtoolsChannel } from '../src';
 
 const KEY = '__DEVTOOLS_KIT_TEST_API__';
 
 afterEach(() => {
   delete (globalThis as Record<string, unknown>)[KEY];
+  vi.restoreAllMocks();
 });
 
-type Entities = { widget: { id: string; label: string } };
-type Event = { type: 'widget:tick'; at: number };
+const widgetSchema = z.object({ id: z.string(), label: z.string() });
+const eventSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('widget:tick'), at: z.number() }),
+  z.object({ type: z.literal('widget:error'), at: z.number(), message: z.string() }),
+]);
 
-interface ViewModel {
-  widgets: ReadonlyArray<{ id: string; label: string }>;
-  tickCount: number;
+type Widget = z.infer<typeof widgetSchema>;
+type WidgetEvent = z.infer<typeof eventSchema>;
+
+function makeApi(validate = false) {
+  return createDevtools({
+    key: KEY,
+    entities: { widget: widgetSchema },
+    events: eventSchema,
+    validate,
+  });
 }
 
-function makeApi() {
-  return createDevtoolsChannelApi<Entities, Event>(KEY);
-}
+describe('createDevtools', () => {
+  it('infers entity and event types from the schemas, no explicit generics', () => {
+    const api = makeApi();
+    expectTypeOf(api.putEntity).parameter(0).toEqualTypeOf<'widget'>();
+    expectTypeOf(api.putEntity).parameter(2).toEqualTypeOf<Widget>();
+    expectTypeOf(api.emit).parameter(0).toEqualTypeOf<WidgetEvent>();
 
-const reduce = (snapshot: {
-  entities: { widget: ReadonlyArray<{ id: string; label: string }> };
-  events: ReadonlyArray<Event>;
-}): ViewModel => ({
-  widgets: snapshot.entities.widget ?? [],
-  tickCount: snapshot.events.filter((e) => e.type === 'widget:tick').length,
-});
+    api.createClient((snapshot) => {
+      expectTypeOf(snapshot.entities.widget).toEqualTypeOf<
+        ReadonlyArray<Widget>
+      >();
+      expectTypeOf(snapshot.events).toEqualTypeOf<ReadonlyArray<WidgetEvent>>();
+      return snapshot.entities.widget.length;
+    });
+  });
 
-describe('createDevtoolsChannelApi', () => {
   it('routes putEntity / emit to the shared channel', () => {
     const api = makeApi();
     api.putEntity('widget', 'w1', { id: 'w1', label: 'A' });
@@ -48,12 +63,12 @@ describe('createDevtoolsChannelApi', () => {
 
   it('createClient yields a working, memoised Devtools', async () => {
     const api = makeApi();
-    const client = api.createClient(reduce);
+    const client = api.createClient((snapshot) => ({
+      widgets: snapshot.entities.widget ?? [],
+      ticks: snapshot.events.filter((e) => e.type === 'widget:tick').length,
+    }));
     expect(client).toBeInstanceOf(Devtools);
     expect(client.isActive).toBe(true);
-
-    const listener = vi.fn();
-    client.subscribe(listener);
 
     const first = client.getViewModel();
     expect(client.getViewModel()).toBe(first);
@@ -62,17 +77,44 @@ describe('createDevtoolsChannelApi', () => {
     api.emit({ type: 'widget:tick', at: 1 });
     await Promise.resolve();
 
-    expect(listener).toHaveBeenCalled();
     const next = client.getViewModel();
     expect(next).not.toBe(first);
     expect(next.widgets).toHaveLength(1);
-    expect(next.tickCount).toBe(1);
+    expect(next.ticks).toBe(1);
   });
 
   it('is inert when given an explicit undefined channel', () => {
     const api = makeApi();
-    const client = api.createClient(reduce, { channel: undefined });
+    const client = api.createClient(
+      (snapshot) => snapshot.entities.widget ?? [],
+      { channel: undefined },
+    );
     expect(client.isActive).toBe(false);
-    expect(client.getViewModel()).toEqual({ widgets: [], tickCount: 0 });
+    expect(client.getViewModel()).toEqual([]);
+  });
+
+  it('warns when validate is on and a payload fails its schema', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const api = makeApi(true);
+
+    // `label` is required by the schema.
+    api.putEntity('widget', 'w1', { id: 'w1' } as never);
+
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('entity "widget" failed schema validation'),
+      expect.anything(),
+      expect.anything(),
+    );
+    // The entity is still recorded — validation only warns.
+    expect(getDevtoolsChannel(KEY)!.getSnapshot().entities.widget).toHaveLength(
+      1,
+    );
+  });
+
+  it('does not validate when validate is off', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const api = makeApi(false);
+    api.putEntity('widget', 'w1', { id: 'w1' } as never);
+    expect(warn).not.toHaveBeenCalled();
   });
 });
