@@ -1,6 +1,6 @@
 {
   "name": "@jfdevelops/devtools-kit-react",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "React provider, hooks, and panel shell for devtools-kit.",
   "repository": {
     "type": "git",

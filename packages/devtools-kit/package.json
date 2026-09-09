@@ -1,6 +1,6 @@
 {
   "name": "@jfdevelops/devtools-kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Framework-agnostic building blocks for library devtools.",
   "repository": {
     "type": "git",
