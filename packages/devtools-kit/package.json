@@ -4,7 +4,7 @@
   "description": "Framework-agnostic building blocks for library devtools.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jfdevelops/devtools-kit.git",
+    "url": "https://github.com/jfdevelops/devtools.git",
     "directory": "packages/devtools-kit"
   },
   "type": "module",

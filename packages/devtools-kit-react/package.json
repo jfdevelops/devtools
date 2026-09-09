@@ -4,7 +4,7 @@
   "description": "React provider, hooks, and panel shell for devtools-kit.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jfdevelops/devtools-kit.git",
+    "url": "https://github.com/jfdevelops/devtools.git",
     "directory": "packages/devtools-kit-react"
   },
   "type": "module",
