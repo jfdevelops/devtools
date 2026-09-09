@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  workflow_call:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  packages:
+    name: Packages Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Run tests
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          packages=(
+            "@jfdevelops/devtools-kit"
+            "@jfdevelops/devtools-kit-react"
+          )
+
+          for package in "${packages[@]}"; do
+            temp_summary="$(mktemp)"
+            test_status=0
+
+            GITHUB_STEP_SUMMARY="$temp_summary" pnpm --filter "$package" test || test_status=$?
+
+            if [[ -n "${GITHUB_STEP_SUMMARY:-}" && -s "$temp_summary" ]]; then
+              sed "1s|^## Vitest Test Report$|## ${package} Test Report|" "$temp_summary" >> "$GITHUB_STEP_SUMMARY"
+              printf '\n' >> "$GITHUB_STEP_SUMMARY"
+            fi
+
+            if [[ "$test_status" -ne 0 ]]; then
+              exit "$test_status"
+            fi
+          done
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Verify changeset
+        if: github.event_name == 'pull_request'
+        run: pnpm changeset status --since=origin/main

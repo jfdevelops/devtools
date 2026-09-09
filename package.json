@@ -1,0 +1,20 @@
+{
+  "name": "devtools-kit-workspace",
+  "private": true,
+  "packageManager": "pnpm@10.28.1",
+  "scripts": {
+    "build": "pnpm -r --filter \"@jfdevelops/*\" build",
+    "typecheck": "pnpm -r --filter \"@jfdevelops/*\" typecheck",
+    "test": "pnpm -r --filter \"@jfdevelops/*\" test",
+    "test:watch": "pnpm -r --filter \"@jfdevelops/*\" test:watch",
+    "changeset": "changeset",
+    "changeset:status": "changeset status",
+    "version-packages": "changeset version",
+    "release": "changeset publish",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@changesets/cli": "2.31.0",
+    "husky": "9.1.7"
+  }
+}
