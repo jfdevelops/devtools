@@ -9,14 +9,14 @@
 
 /**
  * True in every build except a production one. Bundlers replace
- * `process.env.NODE_ENV` textually; short-circuiting `&&` keeps a
- * non-bundled browser ESM load from throwing while still folding to
- * `false` when `NODE_ENV` is `"production"`.
+ * `process.env.NODE_ENV` textually with a string literal, so this folds to
+ * `false` in production and guarded call sites are dead-code eliminated.
+ * Do not wrap in `typeof process` / `try`/`catch`: a leading existence guard
+ * short-circuits in browser bundles (no `process`) before the replaced
+ * literal, forcing `false` even in development; a catching helper often
+ * survives minification and blocks dead-code folding.
  */
-export const IS_DEV: boolean =
-  typeof process !== 'undefined' &&
-  process.env != null &&
-  process.env.NODE_ENV !== 'production';
+export const IS_DEV: boolean = process.env.NODE_ENV !== 'production';
 
 export const DEVTOOLS_CHANNEL_VERSION = 1 as const;
 

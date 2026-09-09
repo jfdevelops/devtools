@@ -1,5 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getDevtoolsChannel } from '../src';
+import { getDevtoolsChannel, IS_DEV } from '../src';
+
+describe('IS_DEV', () => {
+  it('is true when NODE_ENV is not "production"', () => {
+    // Vitest sets NODE_ENV to "test". Bundlers replace process.env.NODE_ENV
+    // textually — no typeof-process guard — so Vite browsers stay in dev.
+    expect(IS_DEV).toBe(true);
+  });
+});
 
 const KEY = '__DEVTOOLS_KIT_TEST_CHANNEL__';
 
