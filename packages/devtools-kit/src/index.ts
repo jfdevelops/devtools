@@ -15,3 +15,5 @@ export {
   type EntitySchemas,
 } from './api';
 export type { StandardSchemaV1 } from '@standard-schema/spec';
+export * from './client';
+export { createPreferenceStore, type PreferenceStorage } from './preferences';

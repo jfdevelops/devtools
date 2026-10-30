@@ -1,5 +1,5 @@
 import { useCallback, useSyncExternalStore } from 'react';
-import type { Devtools } from '@jfdevelops/devtools-kit';
+import type { DevtoolsClient } from '@jfdevelops/devtools-kit';
 import { useOptionalDevtools } from './context';
 
 /**
@@ -10,7 +10,7 @@ import { useOptionalDevtools } from './context';
  * Reads from the nearest `<DevtoolsProvider>`, or from an explicit instance when
  * one is passed.
  */
-export function useDevtoolsViewModel<VM = unknown>(instance?: Devtools<VM>): VM {
+export function useDevtoolsViewModel<VM = unknown>(instance?: DevtoolsClient<VM>): VM {
   const contextDevtools = useOptionalDevtools<VM>();
   const devtools = instance ?? contextDevtools;
 
@@ -26,5 +26,5 @@ export function useDevtoolsViewModel<VM = unknown>(instance?: Devtools<VM>): VM 
   );
   const getSnapshot = useCallback(() => devtools.getViewModel(), [devtools]);
 
-  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  return useSyncExternalStore(subscribe, getSnapshot, () => devtools.getServerViewModel ? devtools.getServerViewModel() : devtools.getViewModel());
 }

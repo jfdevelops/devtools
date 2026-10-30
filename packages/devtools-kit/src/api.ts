@@ -36,6 +36,8 @@ export interface CreateDevtoolsOptions<
    * and `console.warn` on failure. Off by default; async schemas are skipped.
    */
   validate?: boolean;
+  /** Explicitly retain instrumentation in production. */
+  enabled?: boolean;
 }
 
 /**
@@ -93,7 +95,7 @@ export function createDevtools<
   const E extends EntitySchemas,
   Ev extends StandardSchemaV1 = StandardSchemaV1<unknown, unknown>,
 >(options: CreateDevtoolsOptions<E, Ev>): DevtoolsApi<E, Ev> {
-  const { key, entities, events, validate = false } = options;
+  const { key, entities, events, validate = false, enabled = IS_DEV } = options;
   let counter = 0;
   const ownerIds = new Map<symbol, string>();
 
@@ -131,18 +133,18 @@ export function createDevtools<
 
   return {
     putEntity(collection, id, data) {
-      if (!IS_DEV) return;
+      if (!enabled) return;
       checkSchema(entities[collection], `entity "${collection}"`, data);
-      safely(() => getDevtoolsChannel(key)?.putEntity(collection, id, data));
+      safely(() => getDevtoolsChannel(key, enabled)?.putEntity(collection, id, data));
     },
     removeEntity(collection, id) {
-      if (!IS_DEV) return;
-      safely(() => getDevtoolsChannel(key)?.removeEntity(collection, id));
+      if (!enabled) return;
+      safely(() => getDevtoolsChannel(key, enabled)?.removeEntity(collection, id));
     },
     emit(event) {
-      if (!IS_DEV) return;
+      if (!enabled) return;
       checkSchema(events, 'event', event);
-      safely(() => getDevtoolsChannel(key)?.emit(event));
+      safely(() => getDevtoolsChannel(key, enabled)?.emit(event));
     },
     nextId(prefix) {
       counter += 1;
@@ -185,12 +187,14 @@ export function createDevtools<
         'channel' in clientOptions
           ? {
               channelKey: key,
+              enabled,
               reduce: reduceWithDefaults,
               channel: clientOptions.channel,
               maxEvents: clientOptions.maxEvents,
             }
           : {
               channelKey: key,
+              enabled,
               reduce: reduceWithDefaults,
               maxEvents: clientOptions.maxEvents,
             },
