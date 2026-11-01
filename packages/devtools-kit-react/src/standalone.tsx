@@ -59,7 +59,7 @@ function DevtoolsChrome<VM>({
     <DevtoolsProvider devtools={devtools as Devtools<unknown>}>
       <DevtoolsPanelRoot open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
         <div className='dtk-chrome'>
-          <DevtoolsPanelContent className='dtk-chrome__panel'>
+          <DevtoolsPanelContent className='dtk-chrome__panel' autoFocus>
             <div className='dtk-chrome__header'>
               <span>{title}</span>
               <DevtoolsClose className='dtk-chrome__close' aria-label='Close devtools'>&times;</DevtoolsClose>
@@ -104,5 +104,6 @@ function useShadowRoot(container: HTMLElement | undefined, injectStyles: boolean
 
 function StandaloneTrigger({ title }: { title: string }) {
   const { open } = useDevtoolsPanel();
-  return open ? null : <DevtoolsTrigger className='dtk-chrome__toggle'>{title}</DevtoolsTrigger>;
+  // Stays mounted while open so focus can return to it on close.
+  return <DevtoolsTrigger className='dtk-chrome__toggle' hidden={open}>{title}</DevtoolsTrigger>;
 }

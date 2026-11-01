@@ -142,4 +142,22 @@ describe('DevtoolsStandalone', () => {
       host!.shadowRoot!.querySelector('.dtk-chrome__panel'),
     ).not.toBeNull();
   });
+
+  it('focuses the panel on open and returns focus to the toggle on Escape', () => {
+    const { devtools, tabs } = setup();
+    render(<DevtoolsStandalone devtools={devtools} tabs={tabs} />);
+    const shadow = document.querySelector('[data-devtools-kit]')!.shadowRoot!;
+    const toggle = shadow.querySelector('.dtk-chrome__toggle') as HTMLButtonElement;
+    toggle.focus();
+    fireEvent.click(toggle);
+
+    const panel = shadow.querySelector('.dtk-chrome__panel') as HTMLElement;
+    expect(shadow.activeElement).toBe(panel);
+    expect(toggle.hidden).toBe(true);
+
+    fireEvent.keyDown(panel, { key: 'Escape' });
+    expect(shadow.querySelector('.dtk-chrome__panel')).toBeNull();
+    expect(toggle.hidden).toBe(false);
+    expect(shadow.activeElement).toBe(toggle);
+  });
 });

@@ -93,3 +93,23 @@ it('supports a graph-shaped source independently of a request-shaped source', ()
   expect(screen.getByText('https://example.test')).toBeInTheDocument();
   expect(graph.getViewModel()).toBe(graphSnapshot);
 });
+
+it('releases drags when pointer capture is lost and skips notifying unchanged geometry on resize', () => {
+  const onChange = vi.fn();
+  const geometry = { x: 10, y: 10, width: 200, height: 150 };
+  function Handle() {
+    const { getDragHandleProps } = usePanelGeometry({ value: geometry, onChange });
+    return <div {...getDragHandleProps()} />;
+  }
+  render(<Handle />);
+  const handle = screen.getByLabelText('Move panel');
+  handle.setPointerCapture = vi.fn();
+  fireEvent.pointerDown(handle, { button: 0, pointerId: 1, clientX: 0, clientY: 0 });
+  expect(handle.setPointerCapture).toHaveBeenCalledWith(1);
+  const remove = vi.spyOn(window, 'removeEventListener');
+  fireEvent(handle, Object.assign(new Event('lostpointercapture'), { pointerId: 1 }));
+  expect(remove).toHaveBeenCalledWith('pointermove', expect.any(Function));
+  remove.mockRestore();
+  fireEvent(window, new Event('resize'));
+  expect(onChange).not.toHaveBeenCalled();
+});

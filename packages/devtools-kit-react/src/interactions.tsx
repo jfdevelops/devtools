@@ -52,8 +52,8 @@ export const DevtoolsClose = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<
   }} />;
 });
 
-/** Inline, unstyled content. Focus containment is explicitly opt-in. */
-export const DevtoolsPanelContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & { modal?: boolean }>(function DevtoolsPanelContent({ modal = false, onKeyDown, ...props }, forwardedRef) {
+/** Inline, unstyled content. Focus containment is explicitly opt-in; `autoFocus` moves focus in on open without containing it. */
+export const DevtoolsPanelContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & { modal?: boolean }>(function DevtoolsPanelContent({ modal = false, autoFocus = false, onKeyDown, ...props }, forwardedRef) {
   const state = useDevtoolsPanel();
   const elementRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
@@ -64,16 +64,14 @@ export const DevtoolsPanelContent = forwardRef<HTMLDivElement, HTMLAttributes<HT
     function containFocus(event: FocusEvent) {
       if (modal && elementRef.current && !event.composedPath().includes(elementRef.current)) elementRef.current?.focus();
     }
-    if (modal) {
-      elementRef.current?.focus();
-      document?.addEventListener('focusin', containFocus);
-    }
+    if (modal || autoFocus) elementRef.current?.focus();
+    if (modal) document?.addEventListener('focusin', containFocus);
     return () => {
       document?.removeEventListener('focusin', containFocus);
       const target = state.triggerRef.current ?? previous;
       if (target?.isConnected) target.focus();
     };
-  }, [state.open, modal, state.triggerRef]);
+  }, [state.open, modal, autoFocus, state.triggerRef]);
   if (!state.open) return null;
   return <div {...props} id={state.id} ref={(element) => {
     elementRef.current = element;
@@ -112,7 +110,11 @@ export function usePanelGeometry(options: {
   function constrain(next: PanelGeometry, view: Window) {
     const width = Math.min(view.innerWidth, Math.max(options.minWidth ?? 160, next.width));
     const height = Math.min(view.innerHeight, Math.max(options.minHeight ?? 100, next.height));
-    return { width, height, x: Math.max(0, Math.min(view.innerWidth - width, next.x)), y: Math.max(0, Math.min(view.innerHeight - height, next.y)) };
+    const x = Math.max(0, Math.min(view.innerWidth - width, next.x));
+    const y = Math.max(0, Math.min(view.innerHeight - height, next.y));
+    // Keep identity when nothing moved so unchanged geometry never notifies.
+    if (x === next.x && y === next.y && width === next.width && height === next.height) return next;
+    return { width, height, x, y };
   }
   useEffect(() => {
     // Viewport changes are browser-only and never run during server rendering.
@@ -136,7 +138,8 @@ export function usePanelGeometry(options: {
       },
       onPointerDown(event) {
         if (event.button !== 0) return;
-        const view = event.currentTarget.ownerDocument.defaultView;
+        const handle = event.currentTarget;
+        const view = handle.ownerDocument.defaultView;
         if (!view) return;
         event.preventDefault();
         cleanupRef.current?.();
@@ -151,6 +154,8 @@ export function usePanelGeometry(options: {
         }
         function finish(pointer: PointerEvent) { if (pointer.pointerId === pointerId) cleanup(); }
         function cleanup() {
+          handle.removeEventListener('lostpointercapture', finish);
+          if (handle.hasPointerCapture?.(pointerId)) handle.releasePointerCapture(pointerId);
           view!.removeEventListener('pointermove', move);
           view!.removeEventListener('pointerup', finish);
           view!.removeEventListener('pointercancel', finish);
@@ -158,6 +163,9 @@ export function usePanelGeometry(options: {
           cleanupRef.current = null;
         }
         cleanupRef.current = cleanup;
+        // Capture keeps pointer events flowing to this document while the pointer crosses iframes.
+        handle.setPointerCapture?.(pointerId);
+        handle.addEventListener('lostpointercapture', finish);
         view.addEventListener('pointermove', move);
         view.addEventListener('pointerup', finish);
         view.addEventListener('pointercancel', finish);
