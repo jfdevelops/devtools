@@ -3,6 +3,7 @@ import { defineConfig } from 'tsdown';
 export default defineConfig({
   entry: {
     index: 'src/index.ts',
+    headless: 'src/headless.ts',
   },
   unbundle: true,
   sourcemap: true,

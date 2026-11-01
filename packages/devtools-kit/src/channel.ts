@@ -123,8 +123,8 @@ function createChannel(): DevtoolsChannel {
  * Returns the channel for `key`, creating and installing it on `globalThis` on
  * the first call. Returns `undefined` in production so callers compile away.
  */
-export function getDevtoolsChannel(key: string): DevtoolsChannel | undefined {
-  if (!IS_DEV) {
+export function getDevtoolsChannel(key: string, enabled = IS_DEV): DevtoolsChannel | undefined {
+  if (!enabled) {
     return undefined;
   }
   const scope = globalThis as Record<string, unknown>;

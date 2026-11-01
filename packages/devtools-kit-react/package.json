@@ -21,7 +21,12 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./headless": {
+      "types": "./dist/headless.d.mts",
+      "import": "./dist/headless.mjs",
+      "require": "./dist/headless.cjs"
+    }
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"

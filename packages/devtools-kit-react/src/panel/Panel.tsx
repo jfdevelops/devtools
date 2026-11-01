@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useDevtoolsTabs } from '../interactions';
 import type { Devtools } from '@jfdevelops/devtools-kit';
 import type { DevtoolsTab } from '../tab';
 import { useDevtoolsViewModel } from '../use-view-model';
@@ -13,6 +13,9 @@ export interface DevtoolsPanelProps<VM> {
   defaultTabId?: string;
   /** Inject the scoped stylesheet. Default `true`. */
   injectStyles?: boolean;
+  nonce?: string;
+  activeTabId?: string;
+  onActiveTabChange?: (id: string) => void;
 }
 
 /**
@@ -25,27 +28,30 @@ export function DevtoolsPanel<VM>({
   devtools,
   defaultTabId,
   injectStyles = true,
+  nonce,
+  activeTabId,
+  onActiveTabChange,
 }: DevtoolsPanelProps<VM>) {
   const viewModel = useDevtoolsViewModel<VM>(devtools);
-  const [activeId, setActiveId] = useState(defaultTabId ?? tabs[0]?.id);
+  const { activeId, getTabProps, getPanelProps } = useDevtoolsTabs({ ids: tabs.map((tab) => tab.id), value: activeTabId, defaultValue: defaultTabId, onChange: onActiveTabChange });
 
   const active = tabs.find((tab) => tab.id === activeId) ?? tabs[0];
 
   return (
     <div className='dtk'>
-      {injectStyles ? <style>{PANEL_CSS}</style> : null}
+      {injectStyles ? <style nonce={nonce}>{PANEL_CSS}</style> : null}
       <div className='dtk__tabs' role='tablist'>
         {tabs.map((tab) => {
           const count = tab.count?.(viewModel);
           return (
             <button
               type='button'
-              role='tab'
+              {...getTabProps(tab.id)}
               key={tab.id}
               className='dtk__tab'
               data-active={tab.id === active?.id}
               aria-selected={tab.id === active?.id}
-              onClick={() => setActiveId(tab.id)}
+
             >
               {tab.label}
               {count === undefined ? null : (
@@ -55,7 +61,7 @@ export function DevtoolsPanel<VM>({
           );
         })}
       </div>
-      <div className='dtk__body'>{active ? active.render(viewModel) : null}</div>
+      <div className='dtk__body' {...(active ? getPanelProps(active.id) : {})}>{active ? active.render(viewModel) : null}</div>
     </div>
   );
 }

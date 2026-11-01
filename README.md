@@ -95,3 +95,5 @@ pnpm typecheck
 Changesets drives versioning. Add one with `pnpm changeset`; merging to `main`
 opens/updates a release PR, and merging that publishes to npm (needs an
 `NPM_TOKEN` secret).
+
+See [headless integrations](docs/headless-integrations.md) for external sources, typed commands, custom UI, hosts, and migration guidance.

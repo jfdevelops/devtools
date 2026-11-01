@@ -15,6 +15,7 @@ export interface DevtoolsOptions<VM> {
   channel?: DevtoolsChannel | undefined;
   /** Retained-event cap on the channel. */
   maxEvents?: number;
+  enabled?: boolean;
 }
 
 /**
@@ -34,7 +35,7 @@ export class Devtools<VM> {
     this.#channel =
       'channel' in options
         ? options.channel
-        : getDevtoolsChannel(options.channelKey);
+        : getDevtoolsChannel(options.channelKey, options.enabled);
     if (this.#channel && typeof options.maxEvents === 'number') {
       this.#channel.maxEvents = options.maxEvents;
     }

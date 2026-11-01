@@ -36,3 +36,7 @@ export {
   type EntitySchemas,
   type StandardSchemaV1,
 } from '@jfdevelops/devtools-kit';
+export { useDevtoolsActions } from './context';
+export * from './interactions';
+export * from './hosts';
+export { createExternalStoreClient, createActionClient, UnavailableActionError, type DevtoolsClient, type ExternalStore, type ActionAdapter, type ActionContract } from '@jfdevelops/devtools-kit';
