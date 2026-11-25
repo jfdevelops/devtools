@@ -1,5 +1,13 @@
 # @jfdevelops/devtools-kit-react
 
+## 0.2.1
+
+### Patch Changes
+
+- 449172b: Re-export the whole core API from the root entry, adding the missing `createPreferenceStore`, `PreferenceStorage` and `DEVTOOLS_CHANNEL_VERSION`.
+- 3e61b54: Add `actions` and `css` props to `DevtoolsStandalone`, so tabs inside the preset can call actions and you can add your own CSS to its shadow root.
+- aacbd15: Type `useDevtoolsTabs`'s `activeId` as `string | undefined`, since it is `undefined` when `ids` is empty.
+
 ## 0.2.0
 
 ### Minor Changes
