@@ -291,7 +291,7 @@ function useDevtoolsTabs(options: {
   defaultValue?: string;
   onChange?: (id: string) => void;
 }): {
-  activeId: string;
+  activeId: string | undefined;
   setActiveId: (next: string) => void;
   getTabProps: (id: string) => ButtonHTMLAttributes<HTMLButtonElement>;
   getPanelProps: (id: string) => {
@@ -312,7 +312,7 @@ function useDevtoolsTabs(options: {
 
 Behavior:
 
-- `activeId` is the selected id when it is in `ids`, and the first id otherwise. When `ids` is empty, `activeId` is `undefined` at run time even though it is typed `string`.
+- `activeId` is the selected id when it is in `ids`, and the first id otherwise. When `ids` is empty, `activeId` is `undefined`. In 0.2.0 it was typed `string`, even though it could be `undefined`.
 - `getTabProps` returns `role="tab"`, generated and linked `id` and `aria-controls`, `aria-selected`, a roving `tabIndex`, `onClick` and `onKeyDown`. Right and left arrows move to the next and previous tab and wrap. `Home` and `End` select the first and last. Focus moves to the selected tab.
 - `getPanelProps` returns `role="tabpanel"`, `aria-labelledby`, and `hidden` for every id except the active one.
 - You render the `role="tablist"` container.

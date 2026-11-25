@@ -182,7 +182,8 @@ export function usePanelDock(options: { value?: PanelDock; defaultValue?: PanelD
 
 export function useDevtoolsTabs({ ids, value, defaultValue, onChange }: { ids: readonly string[]; value?: string; defaultValue?: string; onChange?: (id: string) => void }) {
   const [selected, setSelected] = useControllableState({ value, defaultValue: defaultValue ?? ids[0] ?? '', onChange });
-  const activeId = ids.includes(selected) ? selected : ids[0];
+  // With an empty `ids` there is no active tab, and `ids.at(0)` keeps that `undefined` in the type.
+  const activeId = ids.includes(selected) ? selected : ids.at(0);
   const prefix = useId();
   function getTabProps(id: string): ButtonHTMLAttributes<HTMLButtonElement> {
     return { role: 'tab', id: `${prefix}-tab-${id}`, 'aria-controls': `${prefix}-panel-${id}`, 'aria-selected': id === activeId, tabIndex: id === activeId ? 0 : -1,

@@ -190,7 +190,7 @@ export function RequestTabs() {
 
 `getTabProps` sets `role="tab"`, linked ids, `aria-selected`, a roving `tabIndex`, a click handler and keyboard handling. Left and right arrows move to the previous and next tab and wrap around, `Home` and `End` jump to the ends, and focus follows the selection. `getPanelProps` sets `role="tabpanel"`, `aria-labelledby`, and `hidden` on every panel except the active one.
 
-The hook is controlled or uncontrolled with `value`, `defaultValue` and `onChange`. The selection falls back to the first id when the selected id is not in `ids`. With an empty `ids` array there is no first id, and `activeId` is `undefined` at run time even though its type is `string`, so avoid passing an empty list.
+The hook is controlled or uncontrolled with `value`, `defaultValue` and `onChange`. The selection falls back to the first id when the selected id is not in `ids`. With an empty `ids` array there is no first id, so `activeId` is `undefined`. Its type is `string | undefined`, so handle that case before using it. In 0.2.0 it was typed `string` even though it could be `undefined`.
 
 ## Keep your own session state
 

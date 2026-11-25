@@ -1,7 +1,7 @@
 import { StrictMode, createRef } from 'react';
 import { renderToString } from 'react-dom/server';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, expect, expectTypeOf, it, vi } from 'vitest';
 import { createExternalStoreClient, DevtoolsProvider, useDevtoolsViewModel, DevtoolsPanelRoot, DevtoolsTrigger, DevtoolsClose, DevtoolsPanelContent, usePanelGeometry, useDevtoolsTabs, DevtoolsShadowHost } from '../src/headless';
 
 afterEach(cleanup);
@@ -112,4 +112,19 @@ it('releases drags when pointer capture is lost and skips notifying unchanged ge
   remove.mockRestore();
   fireEvent(window, new Event('resize'));
   expect(onChange).not.toHaveBeenCalled();
+});
+
+it('has no active tab when there are no ids', () => {
+  let activeId: string | undefined = 'unset';
+
+  function Tabs() {
+    const tabs = useDevtoolsTabs({ ids: [] });
+    expectTypeOf(tabs.activeId).toEqualTypeOf<string | undefined>();
+    activeId = tabs.activeId;
+
+    return null;
+  }
+
+  render(<Tabs />);
+  expect(activeId).toBeUndefined();
 });
