@@ -1,91 +1,18 @@
 ---
-title: Connect an existing store
-description: Inspect a store your library already has with createExternalStoreClient, without copying its data into the kit's channel.
-order: 50
+title: Inspect an existing store in React
+description: Render a client built from an existing store with the provider and hooks, and use it with the styled panel.
+order: 40
 ---
 
-If your library already keeps its state in a store that other code subscribes to, you do not need to mirror that state into the kit's channel. Wrap the store in a client and give it to the panel.
+If you have wrapped a store your library already has in a client, render it with a provider and hooks. The store is not copied into the kit's channel.
+
+This guide assumes `src/request-store.ts` and `src/request-client.ts` from [Connect an existing store](../../../javascript/v0/guides/external-stores.md). Create one client per source, as that guide explains.
 
 In this guide you will:
 
-- Check that your store meets the contract.
-- Create a client from it.
-- Render it with the provider and hooks.
-- Adapt a store whose methods have other names.
-
-## The store contract
-
-A source has three members, described by the `ExternalStore` interface:
-
-| Member | Meaning |
-| --- | --- |
-| `subscribe(listener)` | Registers a listener and returns a function that removes it. |
-| `getSnapshot()` | Returns the current snapshot. |
-| `getServerSnapshot()` | Optional. Returns the snapshot to use when rendering on the server. |
-
-One rule matters more than the rest. **`getSnapshot` must return the same object until the data changes**, and `getServerSnapshot` must follow the same rule. The client compares snapshots with `Object.is` to decide whether to recompute the view model, and React compares them to decide whether to re-render. A source that builds a new object on every call defeats both. In React 18 that logs `The result of getSnapshot should be cached to avoid an infinite loop` and then throws `Maximum update depth exceeded`.
-
-Here is a small request store that follows the contract.
-
-```ts
-// src/request-store.ts
-export interface RequestEntry {
-  id: string;
-  url: string;
-}
-
-export interface RequestSnapshot {
-  requests: readonly RequestEntry[];
-}
-
-export class RequestStore {
-  #listeners = new Set<() => void>();
-  #snapshot: RequestSnapshot = { requests: [] };
-
-  subscribe(listener: () => void) {
-    this.#listeners.add(listener);
-
-    return () => {
-      this.#listeners.delete(listener);
-    };
-  }
-
-  getSnapshot() {
-    return this.#snapshot;
-  }
-
-  add(request: RequestEntry) {
-    this.#snapshot = { requests: [...this.#snapshot.requests, request] };
-
-    for (const listener of this.#listeners) {
-      listener();
-    }
-  }
-}
-
-export const requestStore = new RequestStore();
-```
-
-Each `add` creates a new snapshot object, and `getSnapshot` returns the same one in between. The kit calls `subscribe` and `getSnapshot` as methods on your object, so methods that use `this` work as written.
-
-## Create a client
-
-`createExternalStoreClient` takes the source and an optional projection. The projection turns the snapshot into the view model, and without one the view model is the snapshot itself.
-
-```ts
-// src/request-client.ts
-import { createExternalStoreClient } from '@jfdevelops/devtools-kit-react/headless';
-import { requestStore } from './request-store';
-
-export const requestClient = createExternalStoreClient(
-  requestStore,
-  (snapshot) => snapshot.requests,
-);
-```
-
-The client runs the projection once per distinct snapshot and returns the cached result until the snapshot changes. It subscribes to your store only when something subscribes to the client, and it never disposes your store. Each unsubscribe belongs to the code that subscribed. A client does not write to the global channel and does not check `IS_DEV`, so it stays live in production.
-
-You can import `createExternalStoreClient` from `@jfdevelops/devtools-kit`, from `@jfdevelops/devtools-kit-react` or from `@jfdevelops/devtools-kit-react/headless`. They are the same function.
+- Render the client with the provider.
+- Create the client once per source.
+- Use it with the styled panel.
 
 ## Render it with the provider
 
@@ -153,29 +80,6 @@ export function StoreDevtools({ store }: { store: RequestStore }) {
 }
 ```
 
-## Adapt a store with different method names
-
-If your store's methods are named differently, pass closures that forward to them.
-
-```ts
-// src/legacy-client.ts
-import { createExternalStoreClient } from '@jfdevelops/devtools-kit';
-
-interface LegacyStore {
-  listen(listener: () => void): () => void;
-  current(): ReadonlyMap<string, number>;
-}
-
-export function createLegacyClient(legacy: LegacyStore) {
-  return createExternalStoreClient({
-    subscribe: (listener) => legacy.listen(listener),
-    getSnapshot: () => legacy.current(),
-  });
-}
-```
-
-Keep your own protocol in the snapshot. Graph ids, edges, counts and metadata can stay in whatever shape your library already uses, because the client does not require any fields.
-
 ## Use it with the styled panel
 
 `DevtoolsStandalone` cannot take an external-store client. See [What the preset does not support](./standalone-panel.md#what-the-preset-does-not-support).
@@ -220,14 +124,13 @@ For a floating, draggable panel around an external store, compose your own with 
 
 ## Common mistakes
 
-- Returning a new snapshot object on every `getSnapshot` call.
-- Mutating a snapshot in place and notifying. The client sees the same object, so it keeps the old view model.
-- Creating the client on every render instead of once per source.
+- Returning a new snapshot object on each `getSnapshot` call. This causes the infinite-loop error described in [Troubleshooting](./troubleshooting.md#the-result-of-getsnapshot-should-be-cached-to-avoid-an-infinite-loop).
+- Creating the client on every render instead of once per source. The hook then sees a new client each time, so it discards the cached view model and resubscribes on every render.
 - Passing the client to `DevtoolsStandalone`. TypeScript rejects it.
 
 ## Next steps
 
-- [Add typed actions](./actions.md) lets the inspector send commands back to your library.
-- [Persist panel preferences](./preferences.md) stores panel settings such as size.
-- [Control devtools in production](./production.md) explains why external clients are always live.
-- [`createExternalStoreClient` reference](../reference/functions/createExternalStoreClient.md) lists the signature.
+- [Call actions from React](./actions.md) lets the inspector send commands back to your library.
+- [Build a custom panel](./headless-panel.md) lays out the inspector.
+- [Persist panel layout](./preferences.md) stores the panel's size and position.
+- [Connect an existing store](../../../javascript/v0/guides/external-stores.md) covers the store contract and the client.

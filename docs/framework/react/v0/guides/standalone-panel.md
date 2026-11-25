@@ -1,7 +1,7 @@
 ---
 title: Add the standalone panel
 description: Ship a floating devtools panel for your library with DevtoolsStandalone, and configure its placement, visibility and styles.
-order: 30
+order: 20
 ---
 
 `DevtoolsStandalone` is the quickest way to give your library a devtools panel. It renders a floating toggle and a panel inside a Shadow DOM, so your app's styles cannot reach it and its styles cannot leak out. You wrap it once in your devtools package, and your users render that wrapper.
@@ -103,13 +103,13 @@ The preset does not expose its shadow root, so there is no supported way to load
 
 ## Turn it off or on in production
 
-`DevtoolsStandalone` renders `null` in a production build, unless you pass `enabled`. `enabled` defaults to "this is not a production build", and `enabled={true}` renders it everywhere. See [Control devtools in production](./production.md).
+`DevtoolsStandalone` renders `null` in a production build, unless you pass `enabled`. `enabled` defaults to "this is not a production build", and `enabled={true}` renders it everywhere. See [Control the panel in production](./production.md).
 
 ## What the preset does not support
 
 `DevtoolsStandalone` is deliberately narrow.
 
-- **No `actions` prop.** The preset wraps its content in its own `DevtoolsProvider` with no action adapter. A custom tab that calls `useDevtoolsActions` does not throw, but gets an action client where every action is unavailable, so `isAvailable` returns `false` and `execute` rejects with `UnavailableActionError`. To use actions, build the panel with the headless primitives. See [Add typed actions](./actions.md).
+- **No `actions` prop.** The preset wraps its content in its own `DevtoolsProvider` with no action adapter. A custom tab that calls `useDevtoolsActions` does not throw, but gets an action client where every action is unavailable, so `isAvailable` returns `false` and `execute` rejects with `UnavailableActionError`. To use actions, build the panel with the headless primitives. See [Call actions from React](./actions.md).
 - **Channel clients only.** The `devtools` prop is typed as the `Devtools` class, which is what `createClient` returns. An external-store client from `createExternalStoreClient` is a type error here. Render it with `DevtoolsPanel` inside a `DevtoolsProvider`, or with the headless primitives.
 - **No drag, resize or dock.**
 

@@ -4,7 +4,7 @@ description: Exact props, options and behavior of the styled presets and tab hel
 order: 10
 ---
 
-This page documents the exports that only the root entry of `@jfdevelops/devtools-kit-react` provides: the styled presets, the tab types and the style strings. The provider, hooks, headless primitives and hosts are documented in the [React headless reference](./react-headless.md). The framework-agnostic core is documented in the [core API reference](../reference/index.md).
+This page documents the exports that only the root entry of `@jfdevelops/devtools-kit-react` provides: the styled presets, the tab types and the style strings. The provider, hooks, headless primitives and hosts are documented in the [React headless reference](./react-headless.md). The framework-agnostic core is documented in the [core API reference](../reference/index.md). Guides for the core are in the [JavaScript docs](../../../javascript/v0/overview.md).
 
 The package has two entry points:
 
@@ -82,7 +82,7 @@ export function WizardDevtools() {
 }
 ```
 
-Related: [`DevtoolsPanel`](#devtoolspanel), [`DevtoolsTab`](#devtoolstab), [Control devtools in production](../guides/production.md).
+Related: [`DevtoolsPanel`](#devtoolspanel), [`DevtoolsTab`](#devtoolstab), [Control the panel in production](../guides/production.md).
 
 ## DevtoolsPanel
 

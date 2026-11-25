@@ -1,7 +1,8 @@
 # Headless, composable devtools architecture
 
 Status: implemented in 0.2.0, except as noted below. The user-facing documentation
-for the shipped APIs lives under `docs/framework/react/v0/`; this note records the
+for the shipped APIs lives under `docs/framework/javascript/v0/` (core) and
+`docs/framework/react/v0/` (React); this note records the
 design intent and the decisions behind it. The API example in "Illustrative
 composition" is a sketch, not the shipped API.
 

@@ -99,7 +99,7 @@ export function reportValidationFailure(id: string, message: string) {
 }
 ```
 
-The channel keeps only the newest events. The default limit is 200, and you can change it from the client side with `maxEvents`, as [Derive a view model](./view-models.md#limit-how-many-events-are-kept) explains. The kit does not add timestamps. Include an `at` field in your event schema if your tabs need one, as the built-in event log does.
+The channel keeps only the newest events. The default limit is 200, and you can change it from the client side with `maxEvents`, as [Derive a view model](./view-models.md#limit-how-many-events-are-kept) explains. The kit does not add timestamps. Include an `at` field in your event schema if your UI needs a time for each event.
 
 ## Generate ids
 

@@ -1,30 +1,24 @@
 ---
 title: Overview
-description: What Devtools Kit provides, which package each part of your project uses, and which page to read first.
+description: What the React package adds to Devtools Kit, its two entry points, the two ways to render, and which page to read first.
 order: 10
 ---
 
-A library that grows a devtools panel ends up building the same plumbing every time: a store the library writes into while it runs, a way for a UI to subscribe to that store, a panel with tabs, and a guarantee that none of it costs anything in production. Devtools Kit supplies that plumbing. Your library supplies what is specific to it: the data it exposes, how that data should look, and any commands the panel can run.
+`@jfdevelops/devtools-kit-react` renders devtools for data recorded with `@jfdevelops/devtools-kit`. The core package is documented in the [JavaScript docs](../../javascript/v0/overview.md).
 
-The kit never infers your data model, your UI or your commands. You describe your data with schemas, you decide what the panel shows, and you decide where it renders.
+The React package gives you a provider and hooks that read a client, a set of headless primitives for building a panel, and two styled presets. You decide what the panel shows and where it renders.
 
-## Three roles
+## Where React fits
 
-Most projects that use the kit have three separate pieces of code. They can live in one repository or three.
+The kit assumes three pieces of code, described in full under [Three roles](../../javascript/v0/overview.md#three-roles).
 
-| Role | What it does | Imports |
-| --- | --- | --- |
-| Instrumented library | Describes its data with schemas and reports entities and events at the points where they happen. | `@jfdevelops/devtools-kit` |
-| Devtools package | Turns the recorded data into a view model and renders it, either as tabs or as custom UI. | `@jfdevelops/devtools-kit-react` |
-| App | Renders the devtools component during development. | The devtools package |
+- The instrumented library records data with `@jfdevelops/devtools-kit` and never imports React.
+- The devtools package turns that data into a view model and renders it. This is where you use `@jfdevelops/devtools-kit-react`.
+- The app renders the devtools component during development.
 
-The split matters because the instrumented library should not depend on React or on any UI. It only writes data. The devtools package reads that data and decides how to show it.
+## Two entry points
 
-## Two packages and two React entry points
-
-`@jfdevelops/devtools-kit` is framework-agnostic. It contains the dev-only channel that stores the data, the clients a UI subscribes to, typed actions, and an optional preference store. It has no React, DOM or storage dependency.
-
-`@jfdevelops/devtools-kit-react` adds React on top, through two entry points:
+`@jfdevelops/devtools-kit-react` adds React on top of the core, through two entry points:
 
 | Entry point | Contains | Use it when |
 | --- | --- | --- |
@@ -33,10 +27,7 @@ The split matters because the instrumented library should not depend on React or
 
 ## Two ways to get data in
 
-You can record data into the kit's own channel, or you can point the kit at a store your library already has.
-
-- With the channel, your library calls `createDevtools` once, then reports entities and events as it runs. The channel lives on `globalThis` and only records in development unless you opt in. This path is covered by [Instrument a library](./guides/instrument-a-library.md).
-- With an external store, you wrap an existing `subscribe` and `getSnapshot` source in `createExternalStoreClient`. Nothing is copied into the channel. This path is covered by [Connect an existing store](./guides/external-stores.md).
+You can record data into the kit's channel with [Instrument a library](../../javascript/v0/guides/instrument-a-library.md), or wrap a store you already have with [Connect an existing store](../../javascript/v0/guides/external-stores.md). Either gives you a client to render, and [Inspect an existing store in React](./guides/external-stores.md) shows the React side of the second path.
 
 ## Two ways to render
 
@@ -47,12 +38,11 @@ The standalone preset is the narrower of the two. If you need actions, an extern
 
 ## What reaches production
 
-By default the kit records nothing in production. What happens to your code depends on how you wrote the call sites, and the difference is covered in [Control devtools in production](./guides/production.md).
+By default the kit records nothing in production, and only `DevtoolsStandalone` gates its own rendering. See [Control the panel in production](./guides/production.md), and [Control devtools in production](../../javascript/v0/guides/production.md) for instrumentation.
 
 ## Where to go next
 
-- New to the kit: [Installation](./installation.md), then the [Quick start](./quick-start.md), then [Core concepts](./concepts.md).
-- Adding instrumentation to a library: [Instrument a library](./guides/instrument-a-library.md).
-- Showing the data in a panel: [Derive a view model](./guides/view-models.md) and [Build panel tabs](./guides/tabs.md).
+- New to the React package: [Installation](./installation.md), then the [Quick start](./quick-start.md), then [React concepts](./concepts.md).
+- Showing the data in a panel: [Read the view model in React](./guides/view-models.md) and [Build panel tabs](./guides/tabs.md).
 - Building your own UI: [Build a custom panel](./guides/headless-panel.md).
 - Exact signatures: the [core API reference](./reference/index.md), the [React package reference](./plugins/react.md) and the [React headless reference](./plugins/react-headless.md).

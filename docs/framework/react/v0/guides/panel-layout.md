@@ -1,7 +1,7 @@
 ---
 title: Drag, resize and dock a panel
 description: Make a custom devtools panel movable, resizable and dockable with geometry and dock hooks and a presentation style helper.
-order: 80
+order: 70
 ---
 
 The standalone preset sits in a fixed corner. If your panel needs to move, resize or dock to an edge, build it from the headless primitives and add the layout hooks from this guide. The hooks calculate the layout and give you handlers. You apply them to your own elements.
@@ -13,7 +13,7 @@ In this guide you will:
 - Dock the panel to an edge.
 - Apply the result to a panel host.
 
-This guide builds on [Build a custom panel](./headless-panel.md). The example renders the `RequestInspector` component from [Connect an existing store](./external-stores.md).
+This guide builds on [Build a custom panel](./headless-panel.md). The example renders the `RequestInspector` component from [Inspect an existing store in React](./external-stores.md).
 
 ## Track geometry and attach handles
 
@@ -120,10 +120,10 @@ A docked panel ignores the part of the geometry it does not need. A bottom-docke
 
 ## Persist the layout
 
-To keep geometry or dock across page loads, control the hooks with `value` and `onChange` and store the result with a preference store. See [Persist panel preferences](./preferences.md).
+To keep geometry or dock across page loads, control the hooks with `value` and `onChange` and store the result with a preference store. See [Persist panel layout](./preferences.md).
 
 ## Next steps
 
 - [Render in a portal or Shadow DOM](./hosts-and-styles.md) places the panel in a host of your choice.
-- [Persist panel preferences](./preferences.md) saves the layout.
+- [Persist panel layout](./preferences.md) saves the layout.
 - [React headless reference](../plugins/react-headless.md#usepanelgeometry) lists the options and return values.

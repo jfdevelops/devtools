@@ -1,7 +1,7 @@
 ---
 title: Build a custom panel
 description: Compose your own devtools panel from unstyled primitives for visibility, focus, tabs and controlled state.
-order: 70
+order: 60
 ---
 
 The headless primitives give you the behavior of a devtools panel without its markup or styles. You decide what the panel looks like and where it sits, and the primitives handle open and close state, focus, the Escape key and tab navigation.
@@ -14,7 +14,7 @@ In this guide you will:
 - Add keyboard-accessible tabs.
 - Manage your own state the same way the primitives do.
 
-This guide assumes you have a client, as in [Derive a view model](./view-models.md) or [Connect an existing store](./external-stores.md). The examples render the `RequestInspector` component from the second of those guides.
+This guide assumes you have a client. [Derive a view model](../../../javascript/v0/guides/view-models.md) and [Connect an existing store](../../../javascript/v0/guides/external-stores.md) show how to create one. The examples render the `RequestInspector` component from [Inspect an existing store in React](./external-stores.md).
 
 ## Import from the headless entry point
 
@@ -26,7 +26,7 @@ import { DevtoolsPanelRoot } from '@jfdevelops/devtools-kit-react/headless';
 
 This entry point contains the provider, the hooks, the panel primitives and the hosts. It has no presets and injects no CSS. The kit's tests build it with a real bundler and check that the output contains neither the panel styles nor `DevtoolsStandalone`. Every React export from this entry is also exported from the root entry, so you can switch later without changing names. The headless entry also exports the whole core API, but the root entry omits three of its exports: see [Core exports missing from the root entry](../plugins/react.md#core-exports-missing-from-the-root-entry).
 
-An inspector does not need a panel at all. A `DevtoolsProvider` and a component that calls `useDevtoolsViewModel` is a complete inspector, and you can render it inline, as in [Connect an existing store](./external-stores.md).
+An inspector does not need a panel at all. A `DevtoolsProvider` and a component that calls `useDevtoolsViewModel` is a complete inspector, and you can render it inline, as in [Inspect an existing store in React](./external-stores.md).
 
 ## Compose a panel
 

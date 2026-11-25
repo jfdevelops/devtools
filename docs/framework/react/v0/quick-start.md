@@ -6,7 +6,7 @@ order: 30
 
 In this tutorial you build devtools for a small library that walks users through a wizard. At the end, a floating button in your app opens a panel that lists the wizard's steps and logs every step entry and validation failure.
 
-The tutorial uses one project and three roles in it: a wizard library that records data, a devtools module that renders it, and an app. In a real project the library and its devtools usually live in separate packages. [Core concepts](./concepts.md) explains the split.
+The tutorial uses one project and three roles in it: a wizard library that records data, a devtools module that renders it, and an app. In a real project the library and its devtools usually live in separate packages. [Core concepts](../../javascript/v0/concepts.md) explains the split. Not using React? Follow the [JavaScript quick start](../../javascript/v0/quick-start.md).
 
 ## Prerequisites
 
@@ -206,8 +206,8 @@ You wrote six small files:
 
 ## Next steps
 
-- [Core concepts](./concepts.md) explains the channel, clients and view models you just used.
-- [Instrument a library](./guides/instrument-a-library.md) covers ids, validation and removing entities.
-- [Derive a view model](./guides/view-models.md) covers reducers in depth.
+- [Core concepts](../../javascript/v0/concepts.md) explains the channel, clients and view models you just used, and [React concepts](./concepts.md) covers the provider and the presets.
+- [Instrument a library](../../javascript/v0/guides/instrument-a-library.md) covers ids, validation and removing entities.
+- [Derive a view model](../../javascript/v0/guides/view-models.md) covers reducers in depth.
 - [Build panel tabs](./guides/tabs.md) covers the built-in tabs and inline panels.
 - [Add the standalone panel](./guides/standalone-panel.md) covers its options and limits.

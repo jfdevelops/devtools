@@ -1,7 +1,7 @@
 ---
 title: Build panel tabs
 description: Write custom tabs, use the built-in event log and diagnostics tabs, and embed the tabbed panel inline in your own page.
-order: 40
+order: 30
 ---
 
 A tab is one view in the styled panel. You write tabs for what is specific to your library and use the built-in tabs for the common cases. The same tabs work in `DevtoolsStandalone` and in `DevtoolsPanel`.
@@ -193,7 +193,7 @@ export function InlinePanel() {
 }
 ```
 
-Or read the client from a `DevtoolsProvider`, which also accepts an external-store client. See [Connect an existing store](./external-stores.md).
+Or read the client from a `DevtoolsProvider`, which also accepts an external-store client. See [Inspect an existing store in React](./external-stores.md).
 
 `DevtoolsPanel` opens on the first tab, or on `defaultTabId`. To control the selection yourself, pass `activeTabId` and `onActiveTabChange`.
 

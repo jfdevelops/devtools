@@ -3,6 +3,8 @@
 Pages live under `framework/<framework>/v<major>/`, one directory per documented major.
 Each page is Markdown with `title`, `description` and `order` frontmatter.
 
+`framework/javascript/` documents the core package `@jfdevelops/devtools-kit` and `framework/react/` documents `@jfdevelops/devtools-kit-react`. Both get the generated core API reference.
+
 `maintainers/` holds design and contributor notes. They are not published and no
 public page links to them.
 

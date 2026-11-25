@@ -1,7 +1,7 @@
 ---
 title: Render in a portal or Shadow DOM
 description: Choose where devtools render, isolate them in a Shadow DOM, and load or theme their styles under a strict content security policy.
-order: 90
+order: 80
 ---
 
 The kit never decides where your devtools appear. You pick a host: inline in your page, a portal into a container you own, or a Shadow DOM. This guide covers each host and how styles reach it.
@@ -115,7 +115,7 @@ If you would rather not allow inline styles at all, pass `injectStyles={false}` 
 
 The hosts render nothing on the server. `DevtoolsShadowHost` creates its element in an effect, and `DevtoolsPortal` renders nothing for a `null` container, which is what a container held in state is until the first client render. `DevtoolsStandalone` also creates its host in an effect, so it renders nothing on the server either.
 
-Headless content such as `DevtoolsPanelContent` does render on the server, if the panel is open. The hooks use the client's server view model there. See [Connect an existing store](./external-stores.md).
+Headless content such as `DevtoolsPanelContent` does render on the server, if the panel is open. The hooks use the client's server view model there. See [Inspect an existing store in React](./external-stores.md).
 
 ## Next steps
 

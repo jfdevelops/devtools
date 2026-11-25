@@ -19,6 +19,7 @@ different model, such as a request store with a retry command, uses the same
 adapter boundary unchanged. Both can render inline, under a consumer portal, or in
 another devtools host.
 
-The user-facing guides for the pieces involved are under
-`docs/framework/react/v0/guides/`: `external-stores.md`, `actions.md` and
-`headless-panel.md`.
+The user-facing guides for the pieces involved are `external-stores.md` and
+`actions.md`, which exist in both `docs/framework/javascript/v0/guides/` and
+`docs/framework/react/v0/guides/`, and `headless-panel.md` in
+`docs/framework/react/v0/guides/`.
