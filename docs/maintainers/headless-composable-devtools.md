@@ -1,7 +1,28 @@
 # Headless, composable devtools architecture
 
-Status: proposed design. API examples illustrate the intended contract; they are
-not documentation of APIs already implemented.
+Status: implemented in 0.2.0, except as noted below. The user-facing documentation
+for the shipped APIs lives under `docs/framework/react/v0/`; this note records the
+design intent and the decisions behind it. The API example in "Illustrative
+composition" is a sketch, not the shipped API.
+
+Not implemented, or implemented differently, as of 0.2.0:
+
+1. The children-based `<DevtoolsPanel>` container in the illustrative composition
+   does not exist. `DevtoolsPanel` is still the tabbed styled preset, and the
+   headless container is `DevtoolsPanelContent`.
+2. There are no floating or docked-drawer preset components. The kit provides hooks
+   (`usePanelGeometry`, `usePanelDock`) and `getPanelPresentationStyle`. The
+   standalone preset has no drag, resize or dock.
+3. There is no optional browser storage helper, only the supplied-storage
+   `createPreferenceStore`.
+4. Page-space adjustment is not implemented. No page space is reserved.
+5. Reduced motion is moot, because no animation is applied.
+6. `DevtoolsStandalone` has its own shadow-root host code rather than using
+   `DevtoolsShadowHost`, and has no `actions` prop. Its `devtools` prop, and the one
+   on `DevtoolsPanel`, still require the `Devtools` class instead of `DevtoolsClient`.
+7. Delivery steps 5 and 6 (the React Layout migration and validation with a second
+   library) are outside this repository. The tests only simulate two differently
+   shaped sources.
 
 ## Goal
 
