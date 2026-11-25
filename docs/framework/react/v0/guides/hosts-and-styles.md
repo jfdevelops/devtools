@@ -92,7 +92,7 @@ React context crosses portals and shadow roots, so the provider can sit outside 
 
 ## Mount the standalone preset elsewhere
 
-`DevtoolsStandalone` makes its own shadow host. By default it appends to `document.body`, and you can pass `container` to choose another element. See [Add the standalone panel](./standalone-panel.md).
+`DevtoolsStandalone` makes its own shadow host. By default it appends to `document.body`, and you can pass `container` to choose another element, and `css` to add your own CSS to its shadow root. See [Add the standalone panel](./standalone-panel.md).
 
 ## Where styles come from
 
@@ -100,7 +100,7 @@ React context crosses portals and shadow roots, so the provider can sit outside 
 | --- | --- |
 | Headless primitives and hosts | None. You write them. |
 | `DevtoolsPanel` | An inline `<style>` containing `PANEL_CSS`, unless `injectStyles={false}`. |
-| `DevtoolsStandalone` | One `<style>` in its shadow root containing `CHROME_CSS` and `PANEL_CSS`, unless `injectStyles={false}`. |
+| `DevtoolsStandalone` | One `<style>` in its shadow root containing `CHROME_CSS` and `PANEL_CSS`, unless `injectStyles={false}`. A second `<style>` with your `css` after it, only when you pass `css`. |
 | `DevtoolsShadowHost` | A `<style>` containing your `css`, only when you pass `css`. |
 
 The kit exports `PANEL_CSS` and `CHROME_CSS` as strings so you can place them yourself. The [React package reference](../plugins/react.md#panel_css) lists the custom properties and helper classes.
@@ -109,7 +109,33 @@ The kit exports `PANEL_CSS` and `CHROME_CSS` as strings so you can place them yo
 
 A policy that restricts inline styles needs a nonce. Every place the kit writes a `<style>` accepts a `nonce`: `DevtoolsPanel`, `DevtoolsStandalone` and `DevtoolsShadowHost`. Pass the nonce your server issued for the page.
 
-If you would rather not allow inline styles at all, pass `injectStyles={false}` and load `PANEL_CSS` yourself through a stylesheet your policy allows. For anything in a shadow root the stylesheet must be loaded into that root, and a stylesheet in your page's `<head>` does not reach inside it. With `DevtoolsShadowHost` you do that through its `css` prop. `DevtoolsStandalone` exposes no way to do it, so use `DevtoolsShadowHost` with `DevtoolsPanel` when you need to supply the styles. The limits of the preset are in [Add the standalone panel](./standalone-panel.md#what-the-preset-does-not-support).
+The `css` props of `DevtoolsShadowHost` and `DevtoolsStandalone` both write an inline `<style>` with your `nonce`, so they need the same policy allowance as the built-in styles.
+
+If your policy forbids inline styles entirely, serve `PANEL_CSS` as a stylesheet file and link it from inside the shadow root. A stylesheet in your page's `<head>` does not reach inside a shadow root. `DevtoolsShadowHost` portals its children into the root, so a `<link>` rendered as a child loads there. Pass `injectStyles={false}` to `DevtoolsPanel` so it writes no `<style>` of its own:
+
+```tsx
+// src/linked-styles-panel.tsx
+import {
+  DevtoolsPanel,
+  DevtoolsProvider,
+  DevtoolsShadowHost,
+} from '@jfdevelops/devtools-kit-react';
+import { client } from './client';
+import { eventsTab, stepsTab } from './tabs';
+
+export function LinkedStylesPanel({ container }: { container: HTMLElement | null }) {
+  return (
+    <DevtoolsShadowHost container={container}>
+      <link rel="stylesheet" href="/devtools-panel.css" />
+      <DevtoolsProvider devtools={client}>
+        <DevtoolsPanel tabs={[stepsTab, eventsTab]} injectStyles={false} />
+      </DevtoolsProvider>
+    </DevtoolsShadowHost>
+  );
+}
+```
+
+Here `/devtools-panel.css` is a file you serve with the contents of `PANEL_CSS`. `DevtoolsStandalone` renders no children of its own, so it cannot load a stylesheet file. See [Load and theme styles](./standalone-panel.md#load-and-theme-styles) for the preset.
 
 ## Server rendering
 
@@ -119,6 +145,6 @@ Headless content such as `DevtoolsPanelContent` does render on the server, if th
 
 ## Next steps
 
-- [Add the standalone panel](./standalone-panel.md) shows the preset's own `container`, `nonce` and `injectStyles` props.
+- [Add the standalone panel](./standalone-panel.md) shows the preset's own `container`, `nonce`, `injectStyles` and `css` props.
 - [Build panel tabs](./tabs.md) covers the panel's helper classes.
 - [React headless reference](../plugins/react-headless.md#devtoolsportal) lists the host props.

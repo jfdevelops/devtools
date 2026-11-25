@@ -6,7 +6,7 @@ order: 50
 
 Actions are typed commands your inspector sends back to your library. This guide shows how to pass an adapter to the provider and call its actions from components.
 
-It uses `requestActions` and `RequestActions` from [Add typed actions](../../../javascript/v0/guides/actions.md). A contract maps action names to function types, and an adapter supplies an `execute` function, and optionally `available`, for each name. The guide also uses the `requestClient` from [Connect an existing store](../../../javascript/v0/guides/external-stores.md#create-a-client). Actions work with the provider and the headless primitives. They do not work inside `DevtoolsStandalone`; see [What the preset does not support](./standalone-panel.md#what-the-preset-does-not-support).
+It uses `requestActions` and `RequestActions` from [Add typed actions](../../../javascript/v0/guides/actions.md). A contract maps action names to function types, and an adapter supplies an `execute` function, and optionally `available`, for each name. The guide also uses the `requestClient` from [Connect an existing store](../../../javascript/v0/guides/external-stores.md#create-a-client). Actions work with the provider and the headless primitives. `DevtoolsStandalone` takes an `actions` prop and passes it to its own provider, so its tabs can call actions too; see [Let tabs call actions](./standalone-panel.md#let-tabs-call-actions).
 
 In this guide you will:
 
@@ -86,7 +86,7 @@ The kit does not watch `available`, so a component that calls `isAvailable` only
 
 ## Without an adapter, every action is unavailable
 
-A `DevtoolsProvider` with no `actions` prop gives every action an unavailable state. Without any provider, `useDevtoolsActions` throws instead. If a control is always disabled, check that the provider that wraps it received the adapter. `DevtoolsStandalone` never receives one, as [What the preset does not support](./standalone-panel.md#what-the-preset-does-not-support) explains.
+A `DevtoolsProvider` with no `actions` prop gives every action an unavailable state. Without any provider, `useDevtoolsActions` throws instead. If a control is always disabled, check that the provider that wraps it received the adapter. Inside `DevtoolsStandalone`, pass the adapter as its `actions` prop. Version 0.2.0 had no such prop, so every action there was unavailable. Upgrade the React package to use it.
 
 ## Next steps
 

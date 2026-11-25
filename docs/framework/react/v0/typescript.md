@@ -84,6 +84,8 @@ export function ExternalStandalone() {
 
 The provider's `client` prop, and `useDevtoolsViewModel`, accept any `DevtoolsClient`, which is why external stores work through the provider.
 
+`DevtoolsStandalone` has a second type parameter for its `actions` prop, `Actions extends ActionContract<Actions>`. TypeScript infers it from the adapter you pass, and it defaults to `ActionContract` when you pass none. The tabs still get their contract from `useDevtoolsActions<Actions>()`, which asserts it, as [Call actions from React](./guides/actions.md) explains.
+
 `Devtools` is typed nominally, so two installed copies of the core are not interchangeable. See [Keep one copy of the core installed](../../javascript/v0/typescript.md#keep-one-copy-of-the-core-installed).
 
 ## Next steps

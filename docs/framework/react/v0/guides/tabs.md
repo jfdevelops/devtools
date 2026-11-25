@@ -165,7 +165,7 @@ export const treeTab: DevtoolsTab<WizardViewModel> = {
 };
 ```
 
-The helper classes are `dtk__node`, `dtk__node-row`, `dtk__node-children`, `dtk__name` and `dtk__tag`. The variables are `--dtk-bg`, `--dtk-bg-subtle`, `--dtk-border`, `--dtk-text`, `--dtk-text-dim`, `--dtk-accent`, `--dtk-danger`, `--dtk-warn`, `--dtk-mono` and `--dtk-sans`. The [React package reference](../plugins/react.md#panel_css) lists them with their default values.
+The helper classes are `dtk__node`, `dtk__node-row`, `dtk__node-children`, `dtk__name` and `dtk__tag`. The variables are `--dtk-bg`, `--dtk-bg-subtle`, `--dtk-border`, `--dtk-text`, `--dtk-text-dim`, `--dtk-accent`, `--dtk-danger`, `--dtk-warn`, `--dtk-mono` and `--dtk-sans`. The [React package reference](../plugins/react.md#panel_css) lists them with their default values. To override them in `DevtoolsStandalone`, pass your CSS as `css`. See [Load and theme styles](./standalone-panel.md#load-and-theme-styles).
 
 ## Embed the panel inline
 

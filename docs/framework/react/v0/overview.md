@@ -34,7 +34,7 @@ You can record data into the kit's channel with [Instrument a library](../../jav
 - The styled presets are quick. `DevtoolsStandalone` renders a floating toggle and panel inside a Shadow DOM, and `DevtoolsPanel` renders a tabbed panel inline. See [Add the standalone panel](./guides/standalone-panel.md) and [Build panel tabs](./guides/tabs.md).
 - The headless primitives give you behavior without markup: visibility, focus handling, dragging, resizing and tab navigation. You supply the elements and the styles. See [Build a custom panel](./guides/headless-panel.md).
 
-The standalone preset is the narrower of the two. If you need actions, an external store, or a movable panel, use the headless path. The limits are listed in [What the preset does not support](./guides/standalone-panel.md#what-the-preset-does-not-support).
+The standalone preset is the narrower of the two. It takes actions and your own CSS, but if you need an external store or a movable panel, use the headless path. The limits are listed in [What the preset does not support](./guides/standalone-panel.md#what-the-preset-does-not-support).
 
 ## What reaches production
 

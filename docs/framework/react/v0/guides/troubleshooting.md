@@ -39,7 +39,7 @@ You called `useDevtoolsActions` outside a provider. Wrap the component in a `Dev
 `isAvailable` returns `false` and `execute` rejects with `UnavailableActionError`. Check these causes:
 
 - **No `actions` prop.** A provider without `actions` makes every action unavailable.
-- **You are inside `DevtoolsStandalone`.** No action works there. See [What the preset does not support](./standalone-panel.md#what-the-preset-does-not-support).
+- **You are inside `DevtoolsStandalone` without `actions`.** Pass the adapter as its `actions` prop. See [Let tabs call actions](./standalone-panel.md#let-tabs-call-actions). Version 0.2.0 had no `actions` prop on the preset, so every action there was unavailable. Upgrade the React package to use it, or build the panel with the headless primitives.
 - **Availability changed without a re-render.** Notify through your store so the controls render again. See [Call actions from React](./actions.md).
 - **The adapter itself is the cause.** See [An action is always unavailable](../../../javascript/v0/guides/troubleshooting.md#an-action-is-always-unavailable) for a missing entry or an `available` function that returns `false`.
 
@@ -58,6 +58,14 @@ Their `devtools` prop is typed as the `Devtools` class. A client from `createExt
 ## `createPreferenceStore` is not exported from the React package
 
 In version 0.2.0, the root entry of `@jfdevelops/devtools-kit-react` did not re-export `createPreferenceStore`, `PreferenceStorage` or `DEVTOOLS_CHANNEL_VERSION`. Later releases re-export the whole core API, so upgrade the React package, or import them from `@jfdevelops/devtools-kit` or `@jfdevelops/devtools-kit-react/headless`. See [Persist panel layout](./preferences.md).
+
+## `actions` or `css` does not exist on `DevtoolsStandalone`
+
+Version 0.2.0 of the React package had neither prop. TypeScript reports `Property 'actions' does not exist` or the same for `css`, and at run time the preset ignores them. Upgrade `@jfdevelops/devtools-kit-react`. See [Add the standalone panel](./standalone-panel.md).
+
+## My CSS does not change the standalone panel
+
+A stylesheet in your page does not reach inside the shadow root. Pass the CSS as the `css` prop. Overriding the `--dtk-*` variables on `.dtk` changes the tabs only: the toggle, header and panel frame set their colours directly, so override `.dtk-chrome__toggle`, `.dtk-chrome__header` and `.dtk-chrome__panel` for those. If a rule still does not apply, it has less specificity than the built-in rule it competes with. See [Load and theme styles](./standalone-panel.md#load-and-theme-styles).
 
 ## Next steps
 

@@ -77,6 +77,8 @@ Reusable building blocks for library devtools: a dev-only event/registry channel
 
    This sketch is illustrative: `StepList`, `toRow`, `isError` and `toDiag` stand for your own code. A complete, type-checked version is built step by step in the [Quick start](docs/framework/react/v0/quick-start.md).
 
+   `DevtoolsStandalone` also takes an `actions` adapter, so tabs can call [typed actions](docs/framework/react/v0/guides/standalone-panel.md#let-tabs-call-actions), and a `css` string for [theming](docs/framework/react/v0/guides/standalone-panel.md#load-and-theme-styles).
+
 3. **Your app** drops `<MyLibDevtools />` in during development. In production, instrumentation records nothing by default, `DevtoolsStandalone` renders `null`, and call sites guarded with `if (IS_DEV)` are removed from the bundle. Unguarded calls stay in the bundle as no-ops, and `DevtoolsPanel` and the headless primitives have no production gate of their own. See [Control devtools in production](docs/framework/javascript/v0/guides/production.md) for instrumentation and [Control the panel in production](docs/framework/react/v0/guides/production.md) for the components.
 
 ## Development

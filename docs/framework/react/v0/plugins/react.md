@@ -28,12 +28,17 @@ import { DevtoolsStandalone } from '@jfdevelops/devtools-kit-react';
 ```
 
 ```ts
-function DevtoolsStandalone<VM>(
-  props: DevtoolsStandaloneProps<VM>,
+function DevtoolsStandalone<
+  VM,
+  Actions extends ActionContract<Actions> = ActionContract,
+>(
+  props: DevtoolsStandaloneProps<VM, Actions>,
 ): JSX.Element | null;
 ```
 
 ### DevtoolsStandaloneProps
+
+The props type is `DevtoolsStandaloneProps<VM, Actions extends ActionContract<Actions> = ActionContract>`. TypeScript infers `Actions` from `actions`.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -41,8 +46,10 @@ function DevtoolsStandalone<VM>(
 | `tabs` | `ReadonlyArray<DevtoolsTab<VM>>` | Required | The tabs to show, in order. |
 | `defaultOpen` | `boolean` | `false` | Whether the panel starts open. |
 | `title` | `string` | `'devtools'` | The label on the toggle and in the panel header. |
+| `actions` | `ActionAdapter<Actions>` | None | The action adapter given to the preset's `DevtoolsProvider`, so tabs can call `useDevtoolsActions`. Without it, every action is unavailable. |
+| `css` | `string` | None | Extra CSS added to the shadow root in its own `<style>`, after the built-in styles, whether or not `injectStyles` is on. |
 | `enabled` | `boolean` | `true` unless `process.env.NODE_ENV` is `'production'` | Whether to render. |
-| `nonce` | `string` | None | A nonce for the injected `<style>` element. |
+| `nonce` | `string` | None | A nonce for the built-in `<style>` element and the one for `css`. |
 | `injectStyles` | `boolean` | `true` | Whether to inject `CHROME_CSS` and `PANEL_CSS` into the shadow root. |
 | `container` | `HTMLElement` | `document.body` | The element the host is appended to. |
 | `open` | `boolean` | None | Controls visibility. The panel is uncontrolled while it is `undefined`. |
@@ -52,15 +59,16 @@ function DevtoolsStandalone<VM>(
 
 - Returns `null` unless `enabled`. The default is computed once, when the module loads.
 - Creates a `div[data-devtools-kit]` with an open shadow root in an effect after mounting, so it renders nothing during server rendering. The host is removed on unmount and recreated when `container`, `injectStyles` or `nonce` change.
-- Adds one `<style>` containing `CHROME_CSS` and then `PANEL_CSS` to the shadow root, unless `injectStyles` is `false`. With `injectStyles` set to `false` the shadow root has no styles.
-- Wraps its content in its own `DevtoolsProvider` with `devtools`, and no actions. Components inside it that call `useDevtoolsActions` get an action client where every action is unavailable.
+- Adds one `<style>` containing `CHROME_CSS` and then `PANEL_CSS` to the shadow root, unless `injectStyles` is `false`. With `injectStyles` set to `false` the shadow root has no built-in styles.
+- Adds a second `<style>` containing `css` after the built-in one, when `css` is not empty. It has the `nonce`, and it is added even when `injectStyles` is `false`. Rules of equal specificity in `css` win over the built-in rules. Changing `css` replaces that element without recreating the host, and the element is removed when `css` is cleared or the component unmounts.
+- Wraps its content in its own `DevtoolsProvider` with `devtools` and `actions`. The provider remembers its action client by the identity of `actions`, so pass the same object on every render. Without `actions`, components inside it that call `useDevtoolsActions` get an action client where every action is unavailable.
 - The toggle is a `DevtoolsTrigger`. It stays mounted and is `hidden` while the panel is open. The panel is a `DevtoolsPanelContent` with `autoFocus`, a header with the title and a `DevtoolsClose` button labelled `Close devtools`, and a `DevtoolsPanel` with `injectStyles` off.
 - Opening moves focus into the panel. On close, focus returns to the toggle only if the toggle was clicked to open the panel (or had been clicked before). When the panel is opened from your own code, focus returns to the element that had focus inside the shadow root before it opened, which is usually none.
 - `onOpenChange` runs only for user interactions.
 
 ### Limitations
 
-It has no `actions` prop, accepts only a `Devtools` instance, and cannot be dragged, resized or docked. See [What the preset does not support](../guides/standalone-panel.md#what-the-preset-does-not-support).
+It accepts only a `Devtools` instance, not an external-store client, and cannot be dragged, resized or docked. See [What the preset does not support](../guides/standalone-panel.md#what-the-preset-does-not-support). The `actions` and `css` props were not in 0.2.0.
 
 ### Example
 
@@ -269,4 +277,4 @@ import { CHROME_CSS } from '@jfdevelops/devtools-kit-react';
 const CHROME_CSS: string;
 ```
 
-It defines `:host`, `.dtk-chrome`, `.dtk-chrome__toggle`, `.dtk-chrome__panel`, `.dtk-chrome__header`, `.dtk-chrome__close` and `.dtk-chrome__slot`. The chrome is fixed 12 pixels from the bottom right of the viewport with `z-index: 2147483000`, and the open panel is at most 560 pixels wide and 440 pixels high. `DevtoolsStandalone` exposes no way to load it into its shadow root yourself. To supply your own styles, use `DevtoolsShadowHost` with `DevtoolsPanel`.
+It defines `:host`, `.dtk-chrome`, `.dtk-chrome__toggle`, `.dtk-chrome__panel`, `.dtk-chrome__header`, `.dtk-chrome__close` and `.dtk-chrome__slot`. The chrome is fixed 12 pixels from the bottom right of the viewport with `z-index: 2147483000`, and the open panel is at most 560 pixels wide and 440 pixels high. `DevtoolsStandalone` adds it for you. Its colours are set directly on these classes, not through the `--dtk-*` variables, so override the classes to recolour the chrome. To add your own rules to its shadow root, pass them as `css`. To load a stylesheet file into a shadow root, render a `<link>` inside `DevtoolsShadowHost` with `DevtoolsPanel`; see [Use a content security policy](../guides/hosts-and-styles.md#use-a-content-security-policy).

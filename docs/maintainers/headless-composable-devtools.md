@@ -9,7 +9,7 @@ Not implemented, or implemented differently, as of 0.2.0:
 3. There is no optional browser storage helper, only the supplied-storage `createPreferenceStore`.
 4. Page-space adjustment is not implemented. No page space is reserved.
 5. Reduced motion is moot, because no animation is applied.
-6. `DevtoolsStandalone` has its own shadow-root host code rather than using `DevtoolsShadowHost`, and has no `actions` prop. Its `devtools` prop, and the one on `DevtoolsPanel`, still require the `Devtools` class instead of `DevtoolsClient`.
+6. `DevtoolsStandalone` has its own shadow-root host code rather than using `DevtoolsShadowHost`, and had no `actions` prop in 0.2.0. The next patch release adds `actions` and `css`. Its `devtools` prop, and the one on `DevtoolsPanel`, still require the `Devtools` class instead of `DevtoolsClient`.
 7. Delivery steps 5 and 6 (the React Layout migration and validation with a second library) are outside this repository. The tests only simulate two differently shaped sources.
 
 ## Goal
