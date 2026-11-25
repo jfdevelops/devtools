@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { createDevtools } from '@jfdevelops/devtools-kit';
@@ -8,6 +8,7 @@ import {
   DevtoolsPanel,
   DevtoolsProvider,
   DevtoolsStandalone,
+  useDevtoolsActions,
   type DevtoolsTab,
 } from '../src';
 
@@ -159,5 +160,55 @@ describe('DevtoolsStandalone', () => {
     expect(shadow.querySelector('.dtk-chrome__panel')).toBeNull();
     expect(toggle.hidden).toBe(false);
     expect(shadow.activeElement).toBe(toggle);
+  });
+  it('passes actions to tabs', async () => {
+    const { devtools } = setup();
+    const calls: string[] = [];
+    type Actions = { ping: (input: string) => string };
+
+    function PingButton() {
+      const actions = useDevtoolsActions<Actions>();
+
+      return (
+        <button type='button' disabled={!actions.isAvailable('ping')} onClick={() => void actions.execute('ping', 'hello')}>
+          ping
+        </button>
+      );
+    }
+
+    const pingTab: DevtoolsTab<ViewModel> = { id: 'ping', label: 'Ping', render: () => <PingButton /> };
+
+    render(
+      <DevtoolsStandalone
+        devtools={devtools}
+        tabs={[pingTab]}
+        defaultOpen
+        actions={{ ping: { execute: (input: string) => { calls.push(input); return input; } } }}
+      />,
+    );
+
+    const shadow = document.querySelector('[data-devtools-kit]')!.shadowRoot!;
+    const button = Array.from(shadow.querySelectorAll('button')).find((element) => element.textContent === 'ping')!;
+    expect(button.disabled).toBe(false);
+
+    await act(async () => {
+      fireEvent.click(button);
+    });
+
+    expect(calls).toEqual(['hello']);
+  });
+
+  it('adds consumer styles after the built-in styles', () => {
+    const { devtools, tabs } = setup();
+    const { rerender } = render(<DevtoolsStandalone devtools={devtools} tabs={tabs} css='.dtk { --dtk-bg: red; }' nonce='abc' />);
+    const shadow = document.querySelector('[data-devtools-kit]')!.shadowRoot!;
+    const styles = Array.from(shadow.querySelectorAll('style'));
+    expect(styles).toHaveLength(2);
+    expect(styles[1]!.textContent).toBe('.dtk { --dtk-bg: red; }');
+    expect(styles[1]!.nonce).toBe('abc');
+
+    rerender(<DevtoolsStandalone devtools={devtools} tabs={tabs} css='.dtk { color: blue; }' injectStyles={false} />);
+    const updated = Array.from(document.querySelector('[data-devtools-kit]')!.shadowRoot!.querySelectorAll('style'));
+    expect(updated.map((style) => style.textContent)).toEqual(['.dtk { color: blue; }']);
   });
 });

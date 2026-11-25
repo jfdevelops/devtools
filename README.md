@@ -1,10 +1,6 @@
 # devtools-kit
 
-Reusable building blocks for library devtools: a dev-only event/registry channel,
-a memoised client, and a React panel shell (provider, hooks, tab plugins, and a
-standalone Shadow-DOM chrome). A library supplies its own entity/event schema, a
-view-model reducer, and any custom tabs — the kit provides everything else, and
-compiles to nothing in production.
+Reusable building blocks for library devtools: a dev-only event/registry channel, a memoised client, and a React panel shell (provider, hooks, tab plugins, and a standalone Shadow-DOM chrome). A library supplies its own entity/event schema, a view-model reducer, and any custom tabs — the kit provides everything else. It records nothing in production by default, and instrumentation guarded with `IS_DEV` is removed from production bundles.
 
 | Path | Description |
 | --- | --- |
@@ -13,15 +9,12 @@ compiles to nothing in production.
 
 ## How it fits together
 
-1. **Your library** describes its data with any
-   [Standard Schema](https://standardschema.dev) library (Zod, Valibot,
-   ArkType, …) and calls the API at instrumentation points. Types are inferred
-   from the schemas — no generics:
+1. **Your library** describes its data with any [Standard Schema](https://standardschema.dev) library (Zod, Valibot, ArkType, …) and calls the API at instrumentation points. Types are inferred from the schemas — no generics:
 
    ```ts
    // my-lib/src/devtools.ts
    import { z } from 'zod';
-   import { createDevtools } from '@jfdevelops/devtools-kit';
+   import { createDevtools, IS_DEV } from '@jfdevelops/devtools-kit';
 
    export const devtools = createDevtools({
      key: '__MY_LIB_DEVTOOLS__',
@@ -36,8 +29,10 @@ compiles to nothing in production.
    });
 
    // …elsewhere, guarded so it strips in prod:
-   devtools.putEntity('step', step.id, step);
-   devtools.emit({ type: 'step:enter', at: Date.now(), id: step.id });
+   if (IS_DEV) {
+     devtools.putEntity('step', step.id, step);
+     devtools.emit({ type: 'step:enter', at: Date.now(), id: step.id });
+   }
    ```
 
 2. **Your `-devtools` package** turns snapshots into a view model and tabs:
@@ -48,13 +43,16 @@ compiles to nothing in production.
      createEventLogTab,
      createDiagnosticsTab,
      DevtoolsStandalone,
+     type DevtoolsStandaloneProps,
      type DevtoolsTab,
    } from '@jfdevelops/devtools-kit-react';
 
    const client = devtools.createClient((s) => ({
-     steps: s.entities.step ?? [],
+     steps: s.entities.step,
      events: s.events,
    }));
+
+   type VM = ReturnType<typeof client.getViewModel>;
 
    const stepsTab: DevtoolsTab<VM> = {
      id: 'steps', label: 'Steps',
@@ -62,26 +60,30 @@ compiles to nothing in production.
      render: (vm) => <StepList steps={vm.steps} />,
    };
 
-   export const MyLibDevtools = (props) => (
+   export const MyLibDevtools = (
+     props: Partial<Pick<DevtoolsStandaloneProps<VM>, 'title' | 'defaultOpen'>>,
+   ) => (
      <DevtoolsStandalone
        devtools={client}
        tabs={[
          stepsTab,
-         createEventLogTab({ select: (vm) => vm.events.map(toRow) }),
-         createDiagnosticsTab({ select: (vm) => vm.events.filter(isError).map(toDiag) }),
+         createEventLogTab<VM>({ select: (vm) => vm.events.map(toRow) }),
+         createDiagnosticsTab<VM>({ select: (vm) => vm.events.filter(isError).map(toDiag) }),
        ]}
        {...props}
      />
    );
    ```
 
-3. **Your app** drops `<MyLibDevtools />` in during development. Nothing ships in
-   production — the channel is absent, the components render `null`, and every
-   guarded `emit` call folds away.
+   This sketch is illustrative: `StepList`, `toRow`, `isError` and `toDiag` stand for your own code. A complete, type-checked version is built step by step in the [Quick start](docs/framework/react/v0/quick-start.md).
+
+   `DevtoolsStandalone` also takes an `actions` adapter, so tabs can call [typed actions](docs/framework/react/v0/guides/standalone-panel.md#let-tabs-call-actions), and a `css` string for [theming](docs/framework/react/v0/guides/standalone-panel.md#load-and-theme-styles).
+
+3. **Your app** drops `<MyLibDevtools />` in during development. In production, instrumentation records nothing by default, `DevtoolsStandalone` renders `null`, and call sites guarded with `if (IS_DEV)` are removed from the bundle. Unguarded calls stay in the bundle as no-ops, and `DevtoolsPanel` and the headless primitives have no production gate of their own. See [Control devtools in production](docs/framework/javascript/v0/guides/production.md) for instrumentation and [Control the panel in production](docs/framework/react/v0/guides/production.md) for the components.
 
 ## Development
 
-**Requirements:** Node `^20.19.0 \|\| >=22.12.0`, pnpm `10.28.1`, React `>=18` (peer of the React package)
+**Requirements:** Node `^20.19.0 || >=22.12.0`, pnpm `10.28.1`, React `>=18` (peer of the React package)
 
 ```bash
 pnpm install
@@ -92,8 +94,21 @@ pnpm typecheck
 
 ## Publishing
 
-Changesets drives versioning. Add one with `pnpm changeset`; merging to `main`
-opens/updates a release PR, and merging that publishes to npm (needs an
-`NPM_TOKEN` secret).
+Changesets drives versioning. Add one with `pnpm changeset`; merging to `main` opens/updates a release PR, and merging that publishes to npm (needs an `NPM_TOKEN` secret).
 
-See [headless integrations](docs/headless-integrations.md) for external sources, typed commands, custom UI, hosts, and migration guidance.
+## Documentation
+
+The docs have one tree per package.
+
+Core, `@jfdevelops/devtools-kit`:
+
+- [Overview](docs/framework/javascript/v0/overview.md) and [Quick start](docs/framework/javascript/v0/quick-start.md)
+- [Core concepts](docs/framework/javascript/v0/concepts.md)
+- Guides: [external stores](docs/framework/javascript/v0/guides/external-stores.md), [typed actions](docs/framework/javascript/v0/guides/actions.md) and [troubleshooting](docs/framework/javascript/v0/guides/troubleshooting.md)
+
+React, `@jfdevelops/devtools-kit-react`:
+
+- [Overview](docs/framework/react/v0/overview.md) and [Quick start](docs/framework/react/v0/quick-start.md)
+- Guides: [custom panels](docs/framework/react/v0/guides/headless-panel.md), [portals and Shadow DOM](docs/framework/react/v0/guides/hosts-and-styles.md) and [troubleshooting](docs/framework/react/v0/guides/troubleshooting.md)
+
+Reference: [React package](docs/framework/react/v0/plugins/react.md) and [React headless entry](docs/framework/react/v0/plugins/react-headless.md). The core API reference is generated by `pnpm docs:generate` and is not committed.

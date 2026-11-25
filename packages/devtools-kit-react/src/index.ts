@@ -21,22 +21,7 @@ export {
   type DevtoolsStandaloneProps,
 } from './standalone';
 
-export {
-  createDevtools,
-  Devtools,
-  getDevtoolsChannel,
-  IS_DEV,
-  type CreateClientOptions,
-  type CreateDevtoolsOptions,
-  type DevtoolsApi,
-  type DevtoolsChannel,
-  type DevtoolsChannelSnapshot,
-  type DevtoolsOptions,
-  type DevtoolsSnapshotOf,
-  type EntitySchemas,
-  type StandardSchemaV1,
-} from '@jfdevelops/devtools-kit';
+export * from '@jfdevelops/devtools-kit';
 export { useDevtoolsActions } from './context';
 export * from './interactions';
 export * from './hosts';
-export { createExternalStoreClient, createActionClient, UnavailableActionError, type DevtoolsClient, type ExternalStore, type ActionAdapter, type ActionContract } from '@jfdevelops/devtools-kit';
