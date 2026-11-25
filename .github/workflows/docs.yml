@@ -7,6 +7,9 @@ on:
       - 'packages/devtools-kit/src/**'
       - 'packages/devtools-kit/package.json'
       - 'packages/devtools-kit/CHANGELOG.md'
+      - 'packages/devtools-kit-react/src/**'
+      - 'packages/devtools-kit-react/package.json'
+      - 'packages/devtools-kit-react/CHANGELOG.md'
       - 'jfdevelops.json'
       - '.github/workflows/docs.yml'
   push:
@@ -16,6 +19,9 @@ on:
       - 'packages/devtools-kit/src/**'
       - 'packages/devtools-kit/package.json'
       - 'packages/devtools-kit/CHANGELOG.md'
+      - 'packages/devtools-kit-react/src/**'
+      - 'packages/devtools-kit-react/package.json'
+      - 'packages/devtools-kit-react/CHANGELOG.md'
       - 'jfdevelops.json'
       - '.github/workflows/docs.yml'
 
