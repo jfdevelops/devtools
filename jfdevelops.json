@@ -1,0 +1,375 @@
+{
+  "schemaVersion": 1,
+  "generator": {
+    "package": "@jfdevelops/cli",
+    "version": "0.10.0"
+  },
+  "project": {
+    "name": "devtools-kit-workspace",
+    "packageManager": "pnpm"
+  },
+  "targets": [
+    {
+      "path": "packages/devtools-kit",
+      "kind": "library",
+      "options": {}
+    },
+    {
+      "path": "packages/devtools-kit-react",
+      "kind": "library",
+      "options": {}
+    }
+  ],
+  "addons": [
+    {
+      "name": "@jfdevelops/devtools-kit",
+      "options": {}
+    },
+    {
+      "name": "docs",
+      "options": {
+        "package": "packages/devtools-kit",
+        "name": "Devtools Kit"
+      }
+    }
+  ],
+  "agents": [
+    "claude-code",
+    "codex",
+    "cursor",
+    "copilot"
+  ],
+  "skills": [
+    {
+      "name": "jf-coding-conventions",
+      "required": true,
+      "source": {
+        "package": "@jfdevelops/skills",
+        "version": "ea2f16f29e8133089907245f509cb9662e15f0c5",
+        "path": "./skills/jf-coding-conventions"
+      }
+    },
+    {
+      "name": "jf-docs",
+      "required": true,
+      "source": {
+        "package": "@jfdevelops/skills",
+        "version": "ea2f16f29e8133089907245f509cb9662e15f0c5",
+        "path": "./skills/jf-docs"
+      }
+    },
+    {
+      "name": "jf-docs-analyze",
+      "required": true,
+      "source": {
+        "package": "@jfdevelops/skills",
+        "version": "ea2f16f29e8133089907245f509cb9662e15f0c5",
+        "path": "./skills/jf-docs-analyze"
+      }
+    },
+    {
+      "name": "jf-docs-plan",
+      "required": true,
+      "source": {
+        "package": "@jfdevelops/skills",
+        "version": "ea2f16f29e8133089907245f509cb9662e15f0c5",
+        "path": "./skills/jf-docs-plan"
+      }
+    },
+    {
+      "name": "jf-docs-review",
+      "required": true,
+      "source": {
+        "package": "@jfdevelops/skills",
+        "version": "ea2f16f29e8133089907245f509cb9662e15f0c5",
+        "path": "./skills/jf-docs-review"
+      }
+    },
+    {
+      "name": "jf-docs-standards",
+      "required": true,
+      "source": {
+        "package": "@jfdevelops/skills",
+        "version": "ea2f16f29e8133089907245f509cb9662e15f0c5",
+        "path": "./skills/jf-docs-standards"
+      }
+    },
+    {
+      "name": "jf-docs-write",
+      "required": true,
+      "source": {
+        "package": "@jfdevelops/skills",
+        "version": "ea2f16f29e8133089907245f509cb9662e15f0c5",
+        "path": "./skills/jf-docs-write"
+      }
+    },
+    {
+      "name": "jf-git",
+      "required": true,
+      "source": {
+        "package": "@jfdevelops/skills",
+        "version": "ea2f16f29e8133089907245f509cb9662e15f0c5",
+        "path": "./skills/jf-git"
+      }
+    },
+    {
+      "name": "jf-naming-conventions",
+      "required": true,
+      "source": {
+        "package": "@jfdevelops/skills",
+        "version": "ea2f16f29e8133089907245f509cb9662e15f0c5",
+        "path": "./skills/jf-naming-conventions"
+      }
+    }
+  ],
+  "managedFiles": [
+    {
+      "path": ".agents/skills/jf-coding-conventions/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-coding-conventions"
+      },
+      "sha256": "6b6453d70c6668af56e11012bf9743abca4815bd0cb4d940a918128913cd1dcb"
+    },
+    {
+      "path": ".agents/skills/jf-docs-analyze/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-analyze"
+      },
+      "sha256": "74f4806559356a9fdf5a280c55edb4d584c9c7a3b6a411e685fe3dad2bd9deb1"
+    },
+    {
+      "path": ".agents/skills/jf-docs-plan/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-plan"
+      },
+      "sha256": "4cb9c71082e6c90a0e1f3f10e5969f53f5c3247b247cf4c8dd9c47730f6d0246"
+    },
+    {
+      "path": ".agents/skills/jf-docs-review/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-review"
+      },
+      "sha256": "00e53257e3db0dd3ac9ea65b67b67f4d1abc5e67d6c52cabe775cb655b3d3eee"
+    },
+    {
+      "path": ".agents/skills/jf-docs-review/references/documentation-quality.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-review"
+      },
+      "sha256": "e88a22aaa0462810b55a8f7be948ddc213ad912361f55ea44c2fc8b48b8c2857"
+    },
+    {
+      "path": ".agents/skills/jf-docs-review/references/technical-accuracy.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-review"
+      },
+      "sha256": "f8bbacfc93efb12b2a6e80c5b500bb37ff357e0dfeb506362d3f68456ea50a85"
+    },
+    {
+      "path": ".agents/skills/jf-docs-standards/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-standards"
+      },
+      "sha256": "828ba35207550f887925b82a1fd10e69cbf476ce3f2e7859de002c198977389b"
+    },
+    {
+      "path": ".agents/skills/jf-docs-standards/references/formatting.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-standards"
+      },
+      "sha256": "e857d0b286681f80922ee2934a96737ac1b3fd6277993611afb9bd095bfd3910"
+    },
+    {
+      "path": ".agents/skills/jf-docs-standards/references/layout.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-standards"
+      },
+      "sha256": "42e8edc3870d07ff609ee2fe0020691caab0b9b70fa9d55c85845d19b29d716f"
+    },
+    {
+      "path": ".agents/skills/jf-docs-standards/references/versioning.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-standards"
+      },
+      "sha256": "aa7459c1c6b4673f0a30d847e19c022c1661e9845025092dedb4265106670d76"
+    },
+    {
+      "path": ".agents/skills/jf-docs-write/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-write"
+      },
+      "sha256": "7dbd7c05f72b6cd017a0579daf29c8da09223fbaa0d21843fd0725cc3e4d6717"
+    },
+    {
+      "path": ".agents/skills/jf-docs-write/references/explanations.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-write"
+      },
+      "sha256": "431edf297fd446e9dab9d85b1099341a4d9430d67a4a5644603af8360a230d03"
+    },
+    {
+      "path": ".agents/skills/jf-docs-write/references/guides.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-write"
+      },
+      "sha256": "1c66c3994865cde32560f435d7e6fa16098a186688ccfe6af316d5590db82d59"
+    },
+    {
+      "path": ".agents/skills/jf-docs-write/references/reference.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-write"
+      },
+      "sha256": "cf748026e52e719bf04acbf606988a225a0bf0fac6757982571532f239b69bc6"
+    },
+    {
+      "path": ".agents/skills/jf-docs-write/references/tutorials.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-write"
+      },
+      "sha256": "f7633f881806cd4f5bdbf1c5924fe9e1822f09992617c0843d09d98d1adb3d3c"
+    },
+    {
+      "path": ".agents/skills/jf-docs/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs"
+      },
+      "sha256": "8e2a85973279533ad825784773b87b2e4de6058d7143236c642f2f4904e6fcd5"
+    },
+    {
+      "path": ".agents/skills/jf-git/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-git"
+      },
+      "sha256": "6821cf9a9b7f657d3655a12618a9858fdbb14b24db03e8d65f52f8290b5ed21d"
+    },
+    {
+      "path": ".agents/skills/jf-git/references/branches.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-git"
+      },
+      "sha256": "78628604155f3f21591af3282994ac09002607fc10eba15d04a52eef956e4d45"
+    },
+    {
+      "path": ".agents/skills/jf-git/references/commits.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-git"
+      },
+      "sha256": "469359cb0aea1cb210d46297cdf46f56df18140d68177cd75734cd306df263a0"
+    },
+    {
+      "path": ".agents/skills/jf-git/references/pull-requests.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-git"
+      },
+      "sha256": "680d61f55251d79d4d1dbd2bbae3a5f1711c2fcb1007f7d2dcea4899a27fb70e"
+    },
+    {
+      "path": ".agents/skills/jf-naming-conventions/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-naming-conventions"
+      },
+      "sha256": "c1ea6bed067f524b497da315fa3921a2cebfff2f563bae885112b656197033a9"
+    },
+    {
+      "path": ".claude/skills/jf-coding-conventions/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-coding-conventions"
+      },
+      "sha256": "cd8184f448d4bb38964fd7d28713a8926db25f47ed93d402bad328e61050f602"
+    },
+    {
+      "path": ".claude/skills/jf-docs-analyze/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-analyze"
+      },
+      "sha256": "15b225f11c756e45e604c269605c48b60d7a50e9beb16d53bd22d65d9e813492"
+    },
+    {
+      "path": ".claude/skills/jf-docs-plan/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-plan"
+      },
+      "sha256": "c2ad860e61d8d9d02be49af7a3e29129c87258c1f8a16676570b7c510e55c8f7"
+    },
+    {
+      "path": ".claude/skills/jf-docs-review/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-review"
+      },
+      "sha256": "c814d687a5c54cd861d809ce3f7ba49c28ce01fa25ef29f58edef41b74f8e39a"
+    },
+    {
+      "path": ".claude/skills/jf-docs-standards/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-standards"
+      },
+      "sha256": "6112e2ed2597ff804ba6d06f8940d76273c3baef4256794d5e34a8e05423f039"
+    },
+    {
+      "path": ".claude/skills/jf-docs-write/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs-write"
+      },
+      "sha256": "f6f97ec048e7a716198f1f4d349b502274516767ea44a18db29257d2d34e9735"
+    },
+    {
+      "path": ".claude/skills/jf-docs/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-docs"
+      },
+      "sha256": "7c278bf854b8dd8aa6f87a81dff98f2369ff0cb1cc382b25afeb6597c2edd6aa"
+    },
+    {
+      "path": ".claude/skills/jf-git/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-git"
+      },
+      "sha256": "b5387e82fafbaa8f2e6f85fb60e67d035fc04c49ba9b3d162efda886f8a0528f"
+    },
+    {
+      "path": ".claude/skills/jf-naming-conventions/SKILL.md",
+      "owner": {
+        "type": "skill",
+        "name": "jf-naming-conventions"
+      },
+      "sha256": "6f06b1f73a742e3a695a600d2a5a4d58d6e3f8c8289ef5852349fea269f7b0c0"
+    },
+    {
+      "path": ".github/workflows/docs.yml",
+      "owner": {
+        "type": "addon",
+        "name": "docs"
+      },
+      "sha256": "4d9538eb4e6894fffb452820be18e07013b1693289c6d52cd846905f446a22d1"
+    }
+  ]
+}

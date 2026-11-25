@@ -3,6 +3,8 @@
   "private": true,
   "packageManager": "pnpm@10.28.1",
   "scripts": {
+    "docs:generate": "jfdevelops-docs generate",
+    "docs:check": "jfdevelops-docs check",
     "build": "pnpm -r --filter \"@jfdevelops/*\" build",
     "typecheck": "pnpm -r --filter \"@jfdevelops/*\" typecheck",
     "test": "pnpm -r --filter \"@jfdevelops/*\" test",
@@ -15,6 +17,9 @@
   },
   "devDependencies": {
     "@changesets/cli": "2.31.0",
+    "@jfdevelops/cli": "0.10.0",
+    "@jfdevelops/docs": "^0.2.0",
+    "@jfdevelops/skills": "0.1.0",
     "husky": "9.1.7"
   }
 }
