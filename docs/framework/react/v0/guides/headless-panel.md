@@ -24,7 +24,7 @@ Import from `@jfdevelops/devtools-kit-react/headless`.
 import { DevtoolsPanelRoot } from '@jfdevelops/devtools-kit-react/headless';
 ```
 
-This entry point contains the provider, the hooks, the panel primitives and the hosts. It has no presets and injects no CSS. The kit's tests build it with a real bundler and check that the output contains neither the panel styles nor `DevtoolsStandalone`. Every React export from this entry is also exported from the root entry, so you can switch later without changing names. The headless entry also exports the whole core API, but the root entry omits three of its exports: see [Core exports missing from the root entry](../plugins/react.md#core-exports-missing-from-the-root-entry).
+This entry point contains the provider, the hooks, the panel primitives and the hosts. It has no presets and injects no CSS. The kit's tests build it with a real bundler and check that the output contains neither the panel styles nor `DevtoolsStandalone`. Every export from this entry, React and core alike, is also exported from the root entry, so you can switch later without changing names. See [Core exports](../plugins/react.md#core-exports).
 
 An inspector does not need a panel at all. A `DevtoolsProvider` and a component that calls `useDevtoolsViewModel` is a complete inspector, and you can render it inline, as in [Inspect an existing store in React](./external-stores.md).
 

@@ -57,7 +57,7 @@ Their `devtools` prop is typed as the `Devtools` class. A client from `createExt
 
 ## `createPreferenceStore` is not exported from the React package
 
-`@jfdevelops/devtools-kit-react` re-exports most of the core, but not `createPreferenceStore`, `PreferenceStorage` or `DEVTOOLS_CHANNEL_VERSION`. Import them from `@jfdevelops/devtools-kit` or `@jfdevelops/devtools-kit-react/headless`. See [Persist panel layout](./preferences.md).
+In version 0.2.0, the root entry of `@jfdevelops/devtools-kit-react` did not re-export `createPreferenceStore`, `PreferenceStorage` or `DEVTOOLS_CHANNEL_VERSION`. Later releases re-export the whole core API, so upgrade the React package, or import them from `@jfdevelops/devtools-kit` or `@jfdevelops/devtools-kit-react/headless`. See [Persist panel layout](./preferences.md).
 
 ## Next steps
 

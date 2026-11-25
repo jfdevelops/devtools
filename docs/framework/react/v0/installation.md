@@ -28,7 +28,7 @@ bun add @jfdevelops/devtools-kit zod
 
 ## Install the React package
 
-Add `@jfdevelops/devtools-kit-react` to the package that renders the panel. It depends on `@jfdevelops/devtools-kit`, so the core installs with it. A published release of the React package depends on the core release with the same version, for example 0.2.0. Keep the core you install in the instrumented library on that same release. Otherwise your dependency tree can hold two copies of the core. The channel still works across copies, but the `Devtools` type from one copy is not assignable to the other's, and an `UnavailableActionError` thrown by the provider fails `instanceof` against a class from the other copy. Run `npm ls @jfdevelops/devtools-kit` or `pnpm why @jfdevelops/devtools-kit` to check, and see [Keep one copy of the core installed](../../javascript/v0/typescript.md#keep-one-copy-of-the-core-installed).
+Add `@jfdevelops/devtools-kit-react` to the package that renders the panel. It depends on `@jfdevelops/devtools-kit`, so the core installs with it. A published release of the React package depends on one exact core version, which `npm view @jfdevelops/devtools-kit-react dependencies` shows. Install that exact core version in the instrumented library. Otherwise your dependency tree can hold two copies of the core. The channel still works across copies, but the `Devtools` type from one copy is not assignable to the other's, and an `UnavailableActionError` thrown by the provider fails `instanceof` against a class from the other copy. Run `npm ls @jfdevelops/devtools-kit` or `pnpm why @jfdevelops/devtools-kit` to check, and see [Keep one copy of the core installed](../../javascript/v0/typescript.md#keep-one-copy-of-the-core-installed).
 
 ```npm
 npm i @jfdevelops/devtools-kit-react
@@ -46,7 +46,7 @@ yarn add @jfdevelops/devtools-kit-react
 bun add @jfdevelops/devtools-kit-react
 ```
 
-If the devtools package only renders the panel, you can import everything it needs from `@jfdevelops/devtools-kit-react`, which re-exports most of the core. The exceptions are listed in the [React package reference](./plugins/react.md#core-exports-missing-from-the-root-entry). The instrumented library still imports `@jfdevelops/devtools-kit` directly.
+If the devtools package only renders the panel, you can import everything it needs from `@jfdevelops/devtools-kit-react`, which re-exports the whole core API (see [Core exports](./plugins/react.md#core-exports)). The instrumented library still imports `@jfdevelops/devtools-kit` directly.
 
 ## Requirements
 

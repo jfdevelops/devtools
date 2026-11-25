@@ -22,7 +22,7 @@ The kit assumes three pieces of code, described in full under [Three roles](../.
 
 | Entry point | Contains | Use it when |
 | --- | --- | --- |
-| `@jfdevelops/devtools-kit-react` | The provider and hooks, the headless primitives, the styled presets (`DevtoolsStandalone` and `DevtoolsPanel`), and most of the core API re-exported. | You want a working floating panel quickly, or an inline tabbed panel. |
+| `@jfdevelops/devtools-kit-react` | The provider and hooks, the headless primitives, the styled presets (`DevtoolsStandalone` and `DevtoolsPanel`), and the whole core API re-exported. | You want a working floating panel quickly, or an inline tabbed panel. |
 | `@jfdevelops/devtools-kit-react/headless` | The provider and hooks, the headless primitives and the portal and Shadow DOM hosts, plus the whole core API. No presets and no CSS. | You are composing your own panel, or rendering inside another devtools host. |
 
 ## Two ways to get data in

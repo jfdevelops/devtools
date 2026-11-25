@@ -10,16 +10,14 @@ The package has two entry points:
 
 | Entry point | Contains |
 | --- | --- |
-| `@jfdevelops/devtools-kit-react` | Everything on this page, everything in the headless reference, and 20 core exports. |
+| `@jfdevelops/devtools-kit-react` | Everything on this page, everything in the headless reference, and the whole core API. |
 | `@jfdevelops/devtools-kit-react/headless` | Everything in the headless reference and the whole core API. No presets, no CSS. |
 
 Peer dependencies are `react` and `react-dom`, both version 18 or later.
 
-## Core exports missing from the root entry
+## Core exports
 
-The root entry re-exports these 20 core exports: `createDevtools`, `Devtools`, `getDevtoolsChannel`, `IS_DEV`, `createExternalStoreClient`, `createActionClient`, `UnavailableActionError` and the types `CreateClientOptions`, `CreateDevtoolsOptions`, `DevtoolsApi`, `DevtoolsChannel`, `DevtoolsChannelSnapshot`, `DevtoolsOptions`, `DevtoolsSnapshotOf`, `EntitySchemas`, `StandardSchemaV1`, `DevtoolsClient`, `ExternalStore`, `ActionAdapter` and `ActionContract`.
-
-It does not re-export `createPreferenceStore`, `PreferenceStorage` or `DEVTOOLS_CHANNEL_VERSION`. Import those from `@jfdevelops/devtools-kit` or from `@jfdevelops/devtools-kit-react/headless`.
+The root entry re-exports the whole core API from `@jfdevelops/devtools-kit`, as the headless entry does. Version 0.2.0 left out `createPreferenceStore`, `PreferenceStorage` and `DEVTOOLS_CHANNEL_VERSION`; on that version, import those from `@jfdevelops/devtools-kit` or from `@jfdevelops/devtools-kit-react/headless`.
 
 ## DevtoolsStandalone
 

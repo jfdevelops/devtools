@@ -10,13 +10,10 @@ It uses `layoutPreference`, `layoutClient` and `layoutKey` from [Persist prefere
 
 In this guide you will:
 
-- Import the preference store from an entry point that exports it.
 - Feed a preference into a hook.
 - Load the stored value after mount.
 
-## Import from the right entry point
-
-`createPreferenceStore` is exported from `@jfdevelops/devtools-kit` and from `@jfdevelops/devtools-kit-react/headless`. It is not exported from the React package's root entry. Import it from one of the other two.
+`createPreferenceStore` is exported from `@jfdevelops/devtools-kit` and from both React entry points. In 0.2.0 the React root entry did not export it; on that version, import it from the core package or from `@jfdevelops/devtools-kit-react/headless`.
 
 ## Feed a preference into a hook
 

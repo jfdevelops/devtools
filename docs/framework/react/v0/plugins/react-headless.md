@@ -4,7 +4,7 @@ description: Exact signatures, props and behavior of the provider, hooks, panel 
 order: 20
 ---
 
-This page documents `@jfdevelops/devtools-kit-react/headless`. The entry point has no styled presets and injects no CSS. It re-exports the whole core API, which is documented in the [core API reference](../reference/index.md), and its guides are in the [JavaScript docs](../../../javascript/v0/overview.md). Every React export on this page is also exported from the root entry, `@jfdevelops/devtools-kit-react`. The root entry re-exports only part of the core, as [Core exports missing from the root entry](./react.md#core-exports-missing-from-the-root-entry) lists. The presets and tab helpers that only the root has are in the [React package reference](./react.md).
+This page documents `@jfdevelops/devtools-kit-react/headless`. The entry point has no styled presets and injects no CSS. It re-exports the whole core API, which is documented in the [core API reference](../reference/index.md), and its guides are in the [JavaScript docs](../../../javascript/v0/overview.md). Every export on this page, and the core API, is also exported from the root entry, `@jfdevelops/devtools-kit-react` (see [Core exports](./react.md#core-exports)). The presets and tab helpers that only the root has are in the [React package reference](./react.md).
 
 ```ts
 import { DevtoolsProvider } from '@jfdevelops/devtools-kit-react/headless';
