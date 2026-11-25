@@ -1,11 +1,6 @@
 # devtools-kit
 
-Reusable building blocks for library devtools: a dev-only event/registry channel,
-a memoised client, and a React panel shell (provider, hooks, tab plugins, and a
-standalone Shadow-DOM chrome). A library supplies its own entity/event schema, a
-view-model reducer, and any custom tabs — the kit provides everything else. It
-records nothing in production by default, and instrumentation guarded with
-`IS_DEV` is removed from production bundles.
+Reusable building blocks for library devtools: a dev-only event/registry channel, a memoised client, and a React panel shell (provider, hooks, tab plugins, and a standalone Shadow-DOM chrome). A library supplies its own entity/event schema, a view-model reducer, and any custom tabs — the kit provides everything else. It records nothing in production by default, and instrumentation guarded with `IS_DEV` is removed from production bundles.
 
 | Path | Description |
 | --- | --- |
@@ -14,10 +9,7 @@ records nothing in production by default, and instrumentation guarded with
 
 ## How it fits together
 
-1. **Your library** describes its data with any
-   [Standard Schema](https://standardschema.dev) library (Zod, Valibot,
-   ArkType, …) and calls the API at instrumentation points. Types are inferred
-   from the schemas — no generics:
+1. **Your library** describes its data with any [Standard Schema](https://standardschema.dev) library (Zod, Valibot, ArkType, …) and calls the API at instrumentation points. Types are inferred from the schemas — no generics:
 
    ```ts
    // my-lib/src/devtools.ts
@@ -83,19 +75,9 @@ records nothing in production by default, and instrumentation guarded with
    );
    ```
 
-   This sketch is illustrative: `StepList`, `toRow`, `isError` and `toDiag` stand
-   for your own code. A complete, type-checked version is built step by step in the
-   [Quick start](docs/framework/react/v0/quick-start.md).
+   This sketch is illustrative: `StepList`, `toRow`, `isError` and `toDiag` stand for your own code. A complete, type-checked version is built step by step in the [Quick start](docs/framework/react/v0/quick-start.md).
 
-3. **Your app** drops `<MyLibDevtools />` in during development. In production,
-   instrumentation records nothing by default, `DevtoolsStandalone` renders
-   `null`, and call sites guarded with `if (IS_DEV)` are removed from the bundle.
-   Unguarded calls stay in the bundle as no-ops, and `DevtoolsPanel` and the
-   headless primitives have no production gate of their own. See
-   [Control devtools in production](docs/framework/javascript/v0/guides/production.md)
-   for instrumentation and
-   [Control the panel in production](docs/framework/react/v0/guides/production.md)
-   for the components.
+3. **Your app** drops `<MyLibDevtools />` in during development. In production, instrumentation records nothing by default, `DevtoolsStandalone` renders `null`, and call sites guarded with `if (IS_DEV)` are removed from the bundle. Unguarded calls stay in the bundle as no-ops, and `DevtoolsPanel` and the headless primitives have no production gate of their own. See [Control devtools in production](docs/framework/javascript/v0/guides/production.md) for instrumentation and [Control the panel in production](docs/framework/react/v0/guides/production.md) for the components.
 
 ## Development
 
@@ -110,9 +92,7 @@ pnpm typecheck
 
 ## Publishing
 
-Changesets drives versioning. Add one with `pnpm changeset`; merging to `main`
-opens/updates a release PR, and merging that publishes to npm (needs an
-`NPM_TOKEN` secret).
+Changesets drives versioning. Add one with `pnpm changeset`; merging to `main` opens/updates a release PR, and merging that publishes to npm (needs an `NPM_TOKEN` secret).
 
 ## Documentation
 

@@ -17,3 +17,7 @@ Read each skill before the work it describes:
 - [jf-naming-conventions](.agents/skills/jf-naming-conventions/SKILL.md): Choose names for files, directories, packages, functions, types, and public APIs in jfdevelops projects. Read before adding or renaming these elements.
 
 <!-- jfdevelops:end -->
+
+## Markdown
+
+Never hard-wrap Markdown. Write each paragraph and list item on a single line in every `.md` file, including docs pages, maintainer notes, READMEs and changesets. The vendored skill files under `.agents/skills/` and `.claude/skills/` are managed by `@jfdevelops/cli` and are exempt; change them upstream in `@jfdevelops/skills`.
